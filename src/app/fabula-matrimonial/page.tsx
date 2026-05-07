@@ -4,6 +4,7 @@ import RsvpForm from '@/components/RsvpForm';
 import styles from './fabula.module.css';
 
 const NUM_SHEETS = 7;
+const NUM_MOBILE_PAGES = 14;
 
 type Star    = { id: number; left: string; top: string; size: string; dur: string; delay: string; color: string };
 type Sparkle = { id: number; left: string; top: string; size: string; dur: string; delay: string };
@@ -43,7 +44,6 @@ const Rings = () => (
   <svg width="60" height="34" viewBox="0 0 60 34" fill="none" style={{ display: 'block', margin: '0 auto' }}>
     <circle cx="22" cy="17" r="12" stroke="#C5A059" strokeWidth="1.4" opacity="0.85"/>
     <circle cx="38" cy="17" r="12" stroke="#C5A059" strokeWidth="1.4" opacity="0.85"/>
-    {/* small leaf buds at top of each ring */}
     <path d="M22 5Q20 2 17 3Q19 6 22 5Z" fill="#5A7A63" opacity="0.7"/>
     <path d="M22 5Q24 2 27 3Q25 6 22 5Z" fill="#5A7A63" opacity="0.7"/>
     <path d="M38 5Q36 2 33 3Q35 6 38 5Z" fill="#5A7A63" opacity="0.7"/>
@@ -68,15 +68,17 @@ const text  = '#2E2A24';
 const ivory = '#FCFAF6';
 
 export default function Fabula() {
-  const [progress, setProgress]           = useState(0);
-  const [isPixOpen, setIsPixOpen]         = useState(false);
-  const [copied, setCopied]               = useState(false);
-  const [playing, setPlaying]             = useState(false);
-  const [stars, setStars]                 = useState<Star[]>([]);
-  const [sparkles, setSparkles]           = useState<Sparkle[]>([]);
-  const [showRotate, setShowRotate]       = useState(false);
-  const [ignoreRotate, setIgnoreRotate]   = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const [progress, setProgress]         = useState(0);
+  const [isPixOpen, setIsPixOpen]       = useState(false);
+  const [copied, setCopied]             = useState(false);
+  const [playing, setPlaying]           = useState(false);
+  const [stars, setStars]               = useState<Star[]>([]);
+  const [sparkles, setSparkles]         = useState<Sparkle[]>([]);
+  const [isMobilePortrait, setIsMobilePortrait] = useState(false);
+  const [mobilePage, setMobilePage]     = useState(0);
+  const audioRef  = useRef<HTMLAudioElement>(null);
+  const touchX    = useRef(0);
+  const touchY    = useRef(0);
   const [countdown, setCountdown] = useState({ days: '—', hours: '—', minutes: '—', seconds: '—' });
 
   useEffect(() => {
@@ -99,23 +101,30 @@ export default function Fabula() {
     })));
   }, []);
 
-  // Portrait-mobile detection
+  /* Mobile portrait detection */
   useEffect(() => {
     const check = () => {
-      const mobile = window.innerWidth < 900 && window.innerHeight < 900;
       const portrait = window.innerHeight > window.innerWidth;
-      setShowRotate(mobile && portrait);
+      const mobile   = window.innerWidth < 900;
+      setIsMobilePortrait(portrait && mobile);
     };
     check();
+    const onOrient = () => { setMobilePage(0); setTimeout(check, 80); };
     window.addEventListener('resize', check);
-    window.addEventListener('orientationchange', check);
+    window.addEventListener('orientationchange', onOrient);
     return () => {
       window.removeEventListener('resize', check);
-      window.removeEventListener('orientationchange', check);
+      window.removeEventListener('orientationchange', onOrient);
     };
   }, []);
 
-  // Autoplay attempt; browsers may block until first gesture
+  /* Lock body scroll on mobile portrait */
+  useEffect(() => {
+    document.body.style.overflow = isMobilePortrait ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isMobilePortrait]);
+
+  /* Audio autoplay */
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -126,13 +135,14 @@ export default function Fabula() {
       audioRef.current.play().then(() => setPlaying(true)).catch(() => {});
     };
     window.addEventListener('pointerdown', onGesture, { once: true });
-    window.addEventListener('keydown', onGesture, { once: true });
+    window.addEventListener('keydown',     onGesture, { once: true });
     return () => {
       window.removeEventListener('pointerdown', onGesture);
-      window.removeEventListener('keydown', onGesture);
+      window.removeEventListener('keydown',     onGesture);
     };
   }, []);
 
+  /* Countdown */
   useEffect(() => {
     function tick() {
       const diff = new Date('2026-09-26T16:00:00').getTime() - Date.now();
@@ -149,6 +159,7 @@ export default function Fabula() {
     return () => clearInterval(id);
   }, []);
 
+  /* Desktop scroll */
   useEffect(() => {
     const onScroll = () => setProgress(Math.max(0, Math.min(NUM_SHEETS, window.scrollY / window.innerHeight)));
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -172,6 +183,63 @@ export default function Fabula() {
 
   const jumpTo = (i: number) => window.scrollTo({ top: i * window.innerHeight, behavior: 'smooth' });
 
+  /* ── Swipe handlers ── */
+  function onTouchStart(e: React.TouchEvent) {
+    touchX.current = e.touches[0].clientX;
+    touchY.current = e.touches[0].clientY;
+  }
+  function onTouchEnd(e: React.TouchEvent) {
+    const dx = e.changedTouches[0].clientX - touchX.current;
+    const dy = e.changedTouches[0].clientY - touchY.current;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      setMobilePage(p => dx < 0 ? Math.min(NUM_MOBILE_PAGES - 1, p + 1) : Math.max(0, p - 1));
+    }
+  }
+
+  /* ── Mobile page renderer ── */
+  function renderMobilePage(
+    index: number,
+    content: React.ReactNode,
+    opts: { dark?: boolean; scrollable?: boolean } = {},
+  ) {
+    const { dark = false, scrollable = false } = opts;
+    const offset = (index - mobilePage) * 100;
+    const visible = Math.abs(index - mobilePage) <= 1;
+    return (
+      <div
+        key={index}
+        className={[styles.mobilePage, dark ? styles.mobilePageCover : ''].filter(Boolean).join(' ')}
+        style={{ transform: `translateX(${offset}%)`, visibility: visible ? 'visible' : 'hidden' }}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        <div
+          className={[styles.mobilePageContent, scrollable ? styles.mobileScrollable : ''].filter(Boolean).join(' ')}
+          style={{ paddingTop: '54px', paddingBottom: '60px' }}
+        >
+          {!dark && corners}
+          {content}
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Gift row ── */
+  const GiftRow = ({ img, name, price }: { img: string; name: string; price: string }) => (
+    <div
+      onClick={() => setIsPixOpen(true)}
+      style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', cursor: 'pointer', padding: '0.18rem 0', borderBottom: '1px solid rgba(197,160,89,0.12)' }}
+    >
+      <img src={img} alt={name} style={{ width: 38, height: 38, objectFit: 'cover', flexShrink: 0, borderRadius: 2 }}/>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '0.88rem', fontWeight: 500, color: text, lineHeight: 1.2 }}>{name}</div>
+        <div style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '0.72rem', fontStyle: 'italic', color: '#6B5F50' }}>{price}</div>
+      </div>
+      <span style={{ color: gold, fontSize: '0.65rem', opacity: 0.75 }}>Pix →</span>
+    </div>
+  );
+
+  /* ── Desktop sheet renderer ── */
   const renderSheet = (index: number, front: React.ReactNode, back: React.ReactNode, isCover = false) => {
     let angle = (progress - index) * -180;
     angle = Math.max(-180, Math.min(0, angle));
@@ -203,48 +271,307 @@ export default function Fabula() {
     );
   };
 
-  /* ── Gift row ── */
-  const GiftRow = ({ img, name, price }: { img: string; name: string; price: string }) => (
-    <div
-      onClick={() => setIsPixOpen(true)}
-      style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', cursor: 'pointer', padding: '0.18rem 0', borderBottom: '1px solid rgba(197,160,89,0.12)' }}
-    >
-      <img src={img} alt={name} style={{ width: 38, height: 38, objectFit: 'cover', flexShrink: 0, borderRadius: 2 }}/>
-      <div style={{ flex: 1 }}>
-        <div style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '0.88rem', fontWeight: 500, color: text, lineHeight: 1.2 }}>{name}</div>
-        <div style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '0.72rem', fontStyle: 'italic', color: '#6B5F50' }}>{price}</div>
-      </div>
-      <span style={{ color: gold, fontSize: '0.65rem', opacity: 0.75 }}>Pix →</span>
+  /* ── Shared page content blocks ── */
+  const coverContent = (
+    <div style={{ textAlign: 'center', marginTop: 'auto', marginBottom: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.55rem' }}>
+      <Rings/>
+      <p style={{ fontFamily: '"Cinzel Decorative",serif', fontSize: 'clamp(0.44rem,3vw,0.58rem)', letterSpacing: '0.32em', textTransform: 'uppercase', color: gold, margin: 0 }}>
+        O Casamento de
+      </p>
+      <h1 className={styles.title}>Caio &amp; Sophia</h1>
+      <Divider/>
+      <p style={{ fontFamily: '"Cinzel Decorative",serif', fontSize: 'clamp(0.48rem,3.2vw,0.62rem)', color: gold, letterSpacing: '0.22em', margin: 0 }}>
+        26 · IX · 2026
+      </p>
+      <p style={{ fontFamily: '"Cormorant Garamond",serif', fontStyle: 'italic', fontSize: 'clamp(0.7rem,4vw,0.85rem)', color: 'rgba(197,160,89,0.7)', letterSpacing: '0.1em', margin: 0 }}>
+        Poços de Caldas — Minas Gerais
+      </p>
     </div>
   );
+
+  const insideCoverContent = (
+    <div style={{ textAlign: 'center', marginTop: 'auto', marginBottom: 'auto', color: ivory, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+      <p style={{ fontFamily: '"Great Vibes",cursive', fontSize: 'clamp(2rem,10vw,2.8rem)', color: gold, lineHeight: 1, margin: 0 }}>Para Sempre</p>
+      <div style={{ width: 36, height: 1, background: 'rgba(197,160,89,0.4)' }}/>
+      <p style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: 'clamp(0.78rem,4vw,0.95rem)', color: ivory, letterSpacing: '0.04em', lineHeight: 1.7, opacity: 0.8, maxWidth: 260, margin: 0 }}>
+        O amor é paciente, é bondoso.<br/>
+        Tudo sofre, tudo crê,<br/>tudo espera, tudo suporta.<br/>
+        <br/><em>— 1 Coríntios 13:4‑7</em>
+      </p>
+    </div>
+  );
+
+  const historiaP1Content = (
+    <>
+      <p className={styles.chapter}>Nossa História</p>
+      <h2 className={styles.chapterTitle}>Uma Tarde em 2014</h2>
+      <p className={styles.text}>
+        <span className={styles.dropCap}>E</span>m 2014, os corredores da universidade os apresentaram brevemente — o suficiente para que duas memórias se formassem sem ainda saber por quê. Os anos passaram, cada um a sua vida, até que o acaso os colocou de volta na mesma calçada.
+      </p>
+      <p className={styles.text}>
+        Nada havia sido perdido. O tempo apenas aguardava o momento certo.
+      </p>
+      <div className={styles.quote}>
+        "Até que, numa tarde na Rua John Pinheiro, uma voz familiar atravessou o ar — <em>Pescoço!</em>"
+      </div>
+    </>
+  );
+
+  const historiaP2Content = (
+    <>
+      <div style={{ flex: '0 0 auto', margin: '-1rem -0.9rem 0', overflow: 'hidden', maxHeight: '42%' }}>
+        <img src="/images/image_1.png" alt="Caio e Sophia"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%', display: 'block' }}/>
+      </div>
+      <p className={styles.text} style={{ marginTop: '1rem' }}>
+        Era a Sophia. Sem pretensão, sem ensaio — apenas a pergunta certa, na hora certa: <em>"O que tem de bom pra fazer hoje?"</em>
+      </p>
+      <p className={styles.text}>
+        Ficaram. E desde aquela tarde, nunca mais precisaram se separar.
+      </p>
+    </>
+  );
+
+  const celebracaoContent = (
+    <>
+      <p className={styles.chapter}>A Celebração</p>
+      <h2 className={styles.chapterTitle}>26 de Setembro de 2026</h2>
+      <p className={styles.text} style={{ textAlign: 'center', fontStyle: 'italic', color: '#6B5F50', marginBottom: '0.8rem' }}>
+        Sábado · Poços de Caldas, MG
+      </p>
+      <div>
+        <div className={styles.timelineItem}>
+          <div className={styles.timelineTime}>16h</div>
+          <div>
+            <h4 style={{ fontFamily: '"Cormorant Garamond",serif', color: text, fontSize: '1.1rem', marginBottom: '0.08rem', fontWeight: 600, letterSpacing: '0.04em' }}>
+              Cerimônia
+            </h4>
+            <p className={styles.text} style={{ fontSize: '0.85rem', marginBottom: 0 }}>
+              Início da cerimônia de união.
+            </p>
+          </div>
+        </div>
+        <div className={styles.timelineItem}>
+          <div className={styles.timelineTime}>Após</div>
+          <div>
+            <h4 style={{ fontFamily: '"Cormorant Garamond",serif', color: text, fontSize: '1.1rem', marginBottom: '0.08rem', fontWeight: 600, letterSpacing: '0.04em' }}>
+              Festa &amp; Churrasco
+            </h4>
+            <p className={styles.text} style={{ fontSize: '0.85rem', marginBottom: 0 }}>
+              A recepção começa com música, risos e muito amor.
+            </p>
+          </div>
+        </div>
+      </div>
+      <img src="/images/image_13.png" alt="Local" className={styles.imgCenter}
+        style={{ maxHeight: 80, objectFit: 'cover', objectPosition: 'center top', marginTop: 'auto' }}/>
+    </>
+  );
+
+  const localContent = (
+    <>
+      <p className={styles.chapter}>O Local</p>
+      <h2 className={styles.chapterTitle}>Caldas — Minas Gerais</h2>
+      <p className={styles.text} style={{ fontSize: '0.87rem', textAlign: 'center', marginBottom: '0.7rem' }}>
+        Al. Poços de Caldas, 163 — Laranjeiras, Caldas MG.<br/>Ambiente ao ar livre.
+      </p>
+      <div className={styles.localGrid}>
+        <div className={styles.localCard}>
+          <div className={styles.localCardTitle}><span>🚗</span> Estacionamento</div>
+          <p className={styles.text} style={{ fontSize: '0.8rem', marginBottom: 0 }}>Disponível no local.</p>
+        </div>
+        <div className={styles.localCard}>
+          <div className={styles.localCardTitle}><span>🏡</span> Hospedagem</div>
+          <p className={styles.text} style={{ fontSize: '0.8rem', marginBottom: 0 }}>Espaço para familiares distantes.</p>
+        </div>
+        <div className={styles.localCard} style={{ gridColumn: '1 / -1' }}>
+          <div className={styles.localCardTitle}><span>📍</span> Endereço</div>
+          <p className={styles.text} style={{ fontSize: '0.8rem', marginBottom: 0 }}>Laranjeiras — Caldas, MG · CEP 37780-000</p>
+        </div>
+      </div>
+      <a href="https://maps.google.com/?q=Al.+Po%C3%A7os+de+Caldas,+163+Laranjeiras+Caldas+MG+37780-000"
+        target="_blank" rel="noreferrer" className={styles.mapLink}>
+        Ver Rota no Google Maps
+      </a>
+    </>
+  );
+
+  const trajeContent = (
+    <>
+      <p className={styles.chapter}>Traje</p>
+      <h2 className={styles.chapterTitle}>Esporte Fino</h2>
+      <p className={styles.text} style={{ fontSize: '0.87rem', marginBottom: '0.6rem' }}>
+        O casamento será ao ar livre. Sugerimos tons que harmonizam com o cenário:
+      </p>
+      <div className={styles.swatchGrid}>
+        {[
+          { bg: '#D2C4A8', name: 'Areia'   },
+          { bg: '#8FAF8A', name: 'Sage'     },
+          { bg: '#C4A882', name: 'Caramelo' },
+          { bg: '#5A7A63', name: 'Musgo'    },
+        ].map(sw => (
+          <div key={sw.name} className={styles.swatch}>
+            <div className={styles.swatchColor} style={{ background: sw.bg }}/>{sw.name}
+          </div>
+        ))}
+      </div>
+      <p className={styles.text} style={{ fontSize: '0.82rem', fontStyle: 'italic', textAlign: 'center', marginTop: '0.3rem', marginBottom: 0 }}>
+        Para as damas, evitem salto agulha no gramado.
+      </p>
+      <div className={styles.dressCodeAlert}>
+        Estas cores são apenas sugestão. <strong>Venha como você é.</strong><br/>O que importa é a sua presença.
+      </div>
+    </>
+  );
+
+  const presentesP1Content = (
+    <>
+      <p className={styles.chapter}>Lista de Presentes</p>
+      <h2 className={styles.chapterTitle} style={{ marginBottom: '0.35rem' }}>Para o Novo Lar</h2>
+      <p className={styles.text} style={{ fontSize: '0.78rem', marginBottom: '0.45rem', textAlign: 'center' }}>
+        A maior alegria é a sua presença. Se desejar, escolha um presente:
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+        <GiftRow img="/images/image_2.png" name="Jogo de Xícaras"    price="a partir de R$ 100"/>
+        <GiftRow img="/images/image_3.png" name="Jogo de Toalhas"    price="R$ 150 – R$ 300"/>
+        <GiftRow img="/images/image_4.png" name="Cafeteira Italiana" price="R$ 200 – R$ 380"/>
+        <GiftRow img="/images/image_5.png" name="Jogo de Panelas"    price="R$ 350 – R$ 600"/>
+        <GiftRow img="/images/image_6.png" name="Jogo de Cama"       price="R$ 400 – R$ 700"/>
+        <GiftRow img="/images/image_7.png" name="Air Fryer"          price="R$ 500 – R$ 900"/>
+      </div>
+    </>
+  );
+
+  const presentesP2Content = (
+    <>
+      <p className={styles.chapter} style={{ opacity: 0 }}>·</p>
+      <h2 className={styles.chapterTitle} style={{ marginBottom: '0.35rem' }}>Mais Presentes</h2>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+        <GiftRow img="/images/image_8.png"  name="Aparelho de Jantar" price="R$ 600 – R$ 1.200"/>
+        <GiftRow img="/images/image_9.png"  name="Adega / Frigobar"   price="R$ 1.200 – R$ 2.000"/>
+        <GiftRow img="/images/image_10.png" name="Robô Aspirador"     price="R$ 2.000 – R$ 3.500"/>
+        <GiftRow img="/images/image_11.png" name="Smart TV"           price="R$ 3.500 – R$ 5.000"/>
+        <GiftRow img="/images/image_12.png" name="Lua de Mel ✈"      price="Valor livre"/>
+      </div>
+      <div style={{
+        marginTop: '0.75rem', padding: '0.55rem 0.75rem',
+        border: '1px solid rgba(197,160,89,0.4)',
+        background: 'rgba(197,160,89,0.04)',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem',
+      }}>
+        <div>
+          <p style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '0.62rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6B5F50', margin: 0 }}>
+            Presentear em dinheiro?
+          </p>
+          <p style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '0.95rem', fontStyle: 'italic', color: text, margin: '0.08rem 0 0' }}>
+            Pix — qualquer valor
+          </p>
+        </div>
+        <button onClick={() => setIsPixOpen(true)}
+          style={{ flexShrink: 0, background: '#19241C', color: gold, border: 'none', padding: '0.4rem 0.75rem', fontFamily: '"Cinzel Decorative",serif', fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.12em', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+          Ver Chave
+        </button>
+      </div>
+    </>
+  );
+
+  const galeriaP1Content = (
+    <>
+      <p className={styles.chapter}>Galeria</p>
+      <h2 className={styles.chapterTitle}>Momentos</h2>
+      <div className={styles.galleryGrid}>
+        <img src="/images/image_13.png" className={styles.galleryImg} alt="Galeria"/>
+        <img src="/images/image_14.png" className={styles.galleryImg} alt="Galeria"/>
+        <img src="/images/image_15.png" className={styles.galleryImg} alt="Galeria"/>
+        <img src="/images/image_16.png" className={styles.galleryImg} alt="Galeria"/>
+      </div>
+    </>
+  );
+
+  const galeriaP2Content = (
+    <>
+      <p className={styles.chapter} style={{ opacity: 0 }}>·</p>
+      <h2 className={styles.chapterTitle} style={{ marginBottom: '0.6rem' }}>Nosso Álbum</h2>
+      <div className={styles.galleryGrid}>
+        <img src="/images/image_17.png" className={styles.galleryImg} alt="Galeria"/>
+        <img src="/images/image_18.jpg" className={styles.galleryImg} alt="Galeria"/>
+        <img src="/images/image_19.jpg" className={styles.galleryImg} alt="Galeria"/>
+        <img src="/images/image_20.jpg" className={styles.galleryImg} alt="Galeria"/>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginTop: '0.4rem' }}>
+        <img src="/images/image_21.jpg" style={{ width: '100%', aspectRatio: '3/1', objectFit: 'cover', objectPosition: 'center top', borderRadius: 2 }} alt="Galeria"/>
+        <img src="/images/image_22.jpg" style={{ width: '100%', aspectRatio: '3/1', objectFit: 'cover', objectPosition: 'center top', borderRadius: 2 }} alt="Galeria"/>
+      </div>
+    </>
+  );
+
+  const rsvpContent = (
+    <>
+      <p className={styles.chapter}>Confirmação</p>
+      <h2 className={styles.chapterTitle} style={{ marginBottom: '0.15rem' }}>Confirme sua Presença</h2>
+      <p className={styles.text} style={{ textAlign: 'center', fontSize: '0.78rem', marginBottom: '0.35rem' }}>
+        Confirmar até <strong>31 de agosto de 2026</strong>.
+      </p>
+      <div className={styles.rsvpWrapper}>
+        <RsvpForm/>
+      </div>
+    </>
+  );
+
+  const encerramentoContent = (
+    <div style={{ textAlign: 'center', marginTop: 'auto', marginBottom: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.7rem' }}>
+      <p style={{ fontFamily: '"Great Vibes",cursive', fontSize: 'clamp(1.8rem,10vw,2.8rem)', color: gold, lineHeight: 1, margin: 0 }}>
+        Caio &amp; Sophia
+      </p>
+      <h2 style={{ fontFamily: '"Cinzel Decorative",serif', fontSize: 'clamp(0.8rem,4vw,1.1rem)', fontWeight: 400, color: green, letterSpacing: '0.12em', margin: 0 }}>
+        26 · 09 · 2026
+      </h2>
+      <Divider/>
+      <img src="/images/image_1.png" alt="Caio e Sophia"
+        style={{ width: '52%', display: 'block', borderRadius: '50%', aspectRatio: '1', objectFit: 'cover', objectPosition: 'center 15%', border: '2px solid rgba(197,160,89,0.5)', boxShadow: '0 8px 24px rgba(0,0,0,0.14)' }}/>
+    </div>
+  );
+
+  const contracapaContent = (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: ivory }}>
+      <div style={{ width: 54, height: 54, border: '1px solid rgba(197,160,89,0.5)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.2rem' }}>
+        <span style={{ fontFamily: '"Great Vibes",cursive', color: gold, fontSize: '1.6rem' }}>C&amp;S</span>
+      </div>
+      <div style={{ textAlign: 'center', color: 'rgba(197,160,89,0.65)', fontFamily: '"Cormorant Garamond",serif' }}>
+        <p style={{ fontSize: '0.95rem', margin: 0, letterSpacing: '0.14em', textTransform: 'uppercase' }}>Caio &amp; Sophia</p>
+        <p style={{ fontSize: '0.7rem', margin: '0.5rem 0', letterSpacing: '0.2em', opacity: 0.8 }}>26 · 09 · 2026</p>
+        <p style={{ fontSize: '0.7rem', fontStyle: 'italic', opacity: 0.55 }}>Feito com amor para o grande dia.</p>
+      </div>
+    </div>
+  );
+
+  /* ── Mobile page list ── */
+  const mobilePages = [
+    renderMobilePage(0,  coverContent,       { dark: true }),
+    renderMobilePage(1,  insideCoverContent, { dark: true }),
+    renderMobilePage(2,  historiaP1Content),
+    renderMobilePage(3,  historiaP2Content),
+    renderMobilePage(4,  celebracaoContent),
+    renderMobilePage(5,  localContent),
+    renderMobilePage(6,  trajeContent),
+    renderMobilePage(7,  presentesP1Content),
+    renderMobilePage(8,  presentesP2Content),
+    renderMobilePage(9,  galeriaP1Content),
+    renderMobilePage(10, galeriaP2Content),
+    renderMobilePage(11, rsvpContent,        { scrollable: true }),
+    renderMobilePage(12, encerramentoContent, { dark: true }),
+    renderMobilePage(13, contracapaContent,   { dark: true }),
+  ];
+
+  const mobileNavLabels = [
+    'Capa','Verso','Hist.','Hist.','Progr.','Local',
+    'Traje','Pres.','Pres.','Gal.','Gal.','RSVP','Fim','',
+  ];
 
   return (
     <div className={styles.bodyWrapper}>
 
       <audio ref={audioRef} src="/musica.m4a" loop preload="auto" />
-
-      {/* ── Rotate prompt ── */}
-      {showRotate && !ignoreRotate && (
-        <div className={styles.rotateOverlay}>
-          <div className={styles.rotateContent}>
-            <svg className={styles.rotateIcon} width="56" height="56" viewBox="0 0 56 56" fill="none">
-              {/* Phone outline */}
-              <rect x="14" y="8" width="20" height="34" rx="3" stroke="#C5A059" strokeWidth="1.5" fill="none" opacity="0.85"/>
-              <circle cx="24" cy="37" r="1.5" fill="#C5A059" opacity="0.7"/>
-              {/* Rotation arrow */}
-              <path d="M40 18 Q50 28 40 38" stroke="#5A7A63" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
-              <path d="M40 38 L36 35 M40 38 L43 35" stroke="#5A7A63" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <p className={styles.rotateTitle}>Vire seu celular</p>
-            <p className={styles.rotateSubtitle}>
-              Para a melhor experiência<br/>do convite, use a tela horizontal.
-            </p>
-            <button className={styles.rotateDismiss} onClick={() => setIgnoreRotate(true)}>
-              Continuar assim mesmo
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* ── Music toggle ── */}
       <button
@@ -287,10 +614,36 @@ export default function Fabula() {
         }}/>
       ))}
 
-      {/* ── Scroll rail ── */}
+      {/* ══ MOBILE PORTRAIT — 14 swipe pages ══ */}
+      <div className={styles.mobileContainer}>
+        {/* Top bar */}
+        <div className={styles.mobileTopBar}>
+          <span className={styles.mobileTopTitle}>Caio &amp; Sophia · 26.09.2026</span>
+        </div>
+
+        {/* Pages */}
+        <div style={{ position: 'relative', flex: 1, overflow: 'hidden' }}>
+          {mobilePages}
+        </div>
+
+        {/* Bottom nav */}
+        <div className={styles.mobileNavBar}>
+          <button className={styles.mobilePrev} onClick={() => setMobilePage(p => Math.max(0, p - 1))} aria-label="Anterior">‹</button>
+          {Array.from({ length: NUM_MOBILE_PAGES }, (_, i) => (
+            <div
+              key={i}
+              className={[styles.mobileDot, i === mobilePage ? styles.mobileDotActive : ''].join(' ')}
+              onClick={() => setMobilePage(i)}
+              title={mobileNavLabels[i]}
+            />
+          ))}
+          <button className={styles.mobileNext} onClick={() => setMobilePage(p => Math.min(NUM_MOBILE_PAGES - 1, p + 1))} aria-label="Próximo">›</button>
+        </div>
+      </div>
+
+      {/* ══ DESKTOP — scroll-driven flipbook ══ */}
       <div className={styles.scrollContainer} style={{ height: `${(NUM_SHEETS + 1) * 100}vh` }}/>
 
-      {/* ── Nav ── */}
       <nav className={styles.navBar}>
         <button onClick={() => jumpTo(1)}>História</button>
         <button onClick={() => jumpTo(2)}>Programação</button>
@@ -303,7 +656,6 @@ export default function Fabula() {
 
       <div className={styles.fixedWrapper}>
 
-        {/* ── Countdown ── */}
         <div className={styles.persistentCountdown}>
           {(['days','hours','minutes','seconds'] as const).map((k, i) => (
             <div key={k} className={styles.countdownItem}>
@@ -319,264 +671,40 @@ export default function Fabula() {
 
         <div className={styles.book} style={{ transform: `translateX(0%)` }}>
 
-          {/* ══ SHEET 0: CAPA / FOLHA DE ROSTO ══ */}
           {renderSheet(0,
-            <div style={{ textAlign: 'center', marginTop: 'auto', marginBottom: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.55rem' }}>
-              <Rings/>
-              <p style={{ fontFamily: '"Cinzel Decorative",serif', fontSize: 'clamp(0.44rem,1vw,0.58rem)', letterSpacing: '0.32em', textTransform: 'uppercase', color: gold, margin: 0 }}>
-                O Casamento de
-              </p>
-              <h1 className={styles.title}>Caio &amp; Sophia</h1>
-              <Divider/>
-              <p style={{ fontFamily: '"Cinzel Decorative",serif', fontSize: 'clamp(0.48rem,1.1vw,0.62rem)', color: gold, letterSpacing: '0.22em', margin: 0 }}>
-                26 · IX · 2026
-              </p>
-              <p style={{ fontFamily: '"Cormorant Garamond",serif', fontStyle: 'italic', fontSize: 'clamp(0.7rem,1.4vw,0.85rem)', color: 'rgba(197,160,89,0.7)', letterSpacing: '0.1em', margin: 0 }}>
-                Poços de Caldas — Minas Gerais
-              </p>
-            </div>,
-            <div style={{ textAlign: 'center', marginTop: 'auto', marginBottom: 'auto', color: ivory, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-              <p style={{ fontFamily: '"Great Vibes",cursive', fontSize: 'clamp(2rem,5vw,2.8rem)', color: gold, lineHeight: 1, margin: 0 }}>Para Sempre</p>
-              <div style={{ width: 36, height: 1, background: 'rgba(197,160,89,0.4)' }}/>
-              <p style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: 'clamp(0.78rem,1.6vw,0.95rem)', color: ivory, letterSpacing: '0.04em', lineHeight: 1.7, opacity: 0.8, maxWidth: 240, margin: 0 }}>
-                O amor é paciente, é bondoso.<br/>
-                Tudo sofre, tudo crê,<br/>tudo espera, tudo suporta.<br/>
-                <br/><em>— 1 Coríntios 13:4‑7</em>
-              </p>
-            </div>,
+            coverContent,
+            insideCoverContent,
             true,
           )}
 
-          {/* ══ SHEET 1: HISTÓRIA ══ */}
           {renderSheet(1,
-            <>
-              <p className={styles.chapter}>Nossa História</p>
-              <h2 className={styles.chapterTitle}>Uma Tarde em 2014</h2>
-              <p className={styles.text}>
-                <span className={styles.dropCap}>E</span>m 2014, os corredores da universidade os apresentaram brevemente — o suficiente para que duas memórias se formassem sem ainda saber por quê. Os anos passaram, cada um a sua vida, até que o acaso os colocou de volta na mesma calçada.
-              </p>
-              <p className={styles.text}>
-                Nada havia sido perdido. O tempo apenas aguardava o momento certo.
-              </p>
-              <div className={styles.quote}>
-                "Até que, numa tarde na Rua John Pinheiro, uma voz familiar atravessou o ar — <em>Pescoço!</em>"
-              </div>
-            </>,
-            <>
-              <div style={{ flex: '0 0 auto', margin: '-1.1rem -0.9rem 0', overflow: 'hidden' }}>
-                <img src="/images/image_1.png" alt="Caio e Sophia"
-                  style={{ width: '100%', height: '52%', objectFit: 'cover', objectPosition: 'center 20%', display: 'block' }}/>
-              </div>
-              <p className={styles.text} style={{ marginTop: '1rem' }}>
-                Era a Sophia. Sem pretensão, sem ensaio — apenas a pergunta certa, na hora certa: <em>"O que tem de bom pra fazer hoje?"</em>
-              </p>
-              <p className={styles.text}>
-                Ficaram. E desde aquela tarde, nunca mais precisaram se separar.
-              </p>
-            </>,
+            historiaP1Content,
+            historiaP2Content,
           )}
 
-          {/* ══ SHEET 2: PROGRAMAÇÃO / LOCAL ══ */}
           {renderSheet(2,
-            <>
-              <p className={styles.chapter}>A Celebração</p>
-              <h2 className={styles.chapterTitle}>26 de Setembro de 2026</h2>
-              <p className={styles.text} style={{ textAlign: 'center', fontStyle: 'italic', color: '#6B5F50', marginBottom: '0.8rem' }}>
-                Sábado · Poços de Caldas, MG
-              </p>
-              <div>
-                <div className={styles.timelineItem}>
-                  <div className={styles.timelineTime}>16h</div>
-                  <div>
-                    <h4 style={{ fontFamily: '"Cormorant Garamond",serif', color: text, fontSize: '1.1rem', marginBottom: '0.08rem', fontWeight: 600, letterSpacing: '0.04em' }}>
-                      Cerimônia
-                    </h4>
-                    <p className={styles.text} style={{ fontSize: '0.85rem', marginBottom: 0 }}>
-                      Início da cerimônia de união.
-                    </p>
-                  </div>
-                </div>
-                <div className={styles.timelineItem}>
-                  <div className={styles.timelineTime}>Após</div>
-                  <div>
-                    <h4 style={{ fontFamily: '"Cormorant Garamond",serif', color: text, fontSize: '1.1rem', marginBottom: '0.08rem', fontWeight: 600, letterSpacing: '0.04em' }}>
-                      Festa &amp; Churrasco
-                    </h4>
-                    <p className={styles.text} style={{ fontSize: '0.85rem', marginBottom: 0 }}>
-                      A recepção começa com música, risos e muito amor.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <img src="/images/image_13.png" alt="Local" className={styles.imgCenter}
-                style={{ maxHeight: 80, objectFit: 'cover', objectPosition: 'center top', marginTop: 'auto' }}/>
-            </>,
-            <>
-              <p className={styles.chapter}>O Local</p>
-              <h2 className={styles.chapterTitle}>Caldas — Minas Gerais</h2>
-              <p className={styles.text} style={{ fontSize: '0.87rem', textAlign: 'center', marginBottom: '0.7rem' }}>
-                Al. Poços de Caldas, 163 — Laranjeiras, Caldas MG.<br/>Ambiente ao ar livre.
-              </p>
-              <div className={styles.localGrid}>
-                <div className={styles.localCard}>
-                  <div className={styles.localCardTitle}><span>🚗</span> Estacionamento</div>
-                  <p className={styles.text} style={{ fontSize: '0.8rem', marginBottom: 0 }}>Disponível no local.</p>
-                </div>
-                <div className={styles.localCard}>
-                  <div className={styles.localCardTitle}><span>🏡</span> Hospedagem</div>
-                  <p className={styles.text} style={{ fontSize: '0.8rem', marginBottom: 0 }}>Espaço para familiares distantes.</p>
-                </div>
-                <div className={styles.localCard} style={{ gridColumn: '1 / -1' }}>
-                  <div className={styles.localCardTitle}><span>📍</span> Endereço</div>
-                  <p className={styles.text} style={{ fontSize: '0.8rem', marginBottom: 0 }}>Laranjeiras — Caldas, MG · CEP 37780-000</p>
-                </div>
-              </div>
-              <a href="https://maps.google.com/?q=Al.+Po%C3%A7os+de+Caldas,+163+Laranjeiras+Caldas+MG+37780-000"
-                target="_blank" rel="noreferrer" className={styles.mapLink}>
-                Ver Rota no Google Maps
-              </a>
-            </>,
+            celebracaoContent,
+            localContent,
           )}
 
-          {/* ══ SHEET 3: TRAJE / PRESENTES P1 ══ */}
           {renderSheet(3,
-            <>
-              <p className={styles.chapter}>Traje</p>
-              <h2 className={styles.chapterTitle}>Esporte Fino</h2>
-              <p className={styles.text} style={{ fontSize: '0.87rem', marginBottom: '0.6rem' }}>
-                O casamento será ao ar livre. Sugerimos tons que harmonizam com o cenário:
-              </p>
-              <div className={styles.swatchGrid}>
-                {[
-                  { bg: '#D2C4A8', name: 'Areia'    },
-                  { bg: '#8FAF8A', name: 'Sage'      },
-                  { bg: '#C4A882', name: 'Caramelo'  },
-                  { bg: '#5A7A63', name: 'Musgo'     },
-                ].map(sw => (
-                  <div key={sw.name} className={styles.swatch}>
-                    <div className={styles.swatchColor} style={{ background: sw.bg }}/>{sw.name}
-                  </div>
-                ))}
-              </div>
-              <p className={styles.text} style={{ fontSize: '0.82rem', fontStyle: 'italic', textAlign: 'center', marginTop: '0.3rem', marginBottom: 0 }}>
-                Para as damas, evitem salto agulha no gramado.
-              </p>
-              <div className={styles.dressCodeAlert}>
-                Estas cores são apenas sugestão. <strong>Venha como você é.</strong><br/>O que importa é a sua presença.
-              </div>
-            </>,
-            <>
-              <p className={styles.chapter}>Lista de Presentes</p>
-              <h2 className={styles.chapterTitle} style={{ marginBottom: '0.35rem' }}>Para o Novo Lar</h2>
-              <p className={styles.text} style={{ fontSize: '0.78rem', marginBottom: '0.45rem', textAlign: 'center' }}>
-                A maior alegria é a sua presença. Se desejar, escolha um presente:
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                <GiftRow img="/images/image_2.png" name="Jogo de Xícaras"    price="a partir de R$ 100"/>
-                <GiftRow img="/images/image_3.png" name="Jogo de Toalhas"    price="R$ 150 – R$ 300"/>
-                <GiftRow img="/images/image_4.png" name="Cafeteira Italiana" price="R$ 200 – R$ 380"/>
-                <GiftRow img="/images/image_5.png" name="Jogo de Panelas"    price="R$ 350 – R$ 600"/>
-                <GiftRow img="/images/image_6.png" name="Jogo de Cama"       price="R$ 400 – R$ 700"/>
-                <GiftRow img="/images/image_7.png" name="Air Fryer"          price="R$ 500 – R$ 900"/>
-              </div>
-            </>,
+            trajeContent,
+            presentesP1Content,
           )}
 
-          {/* ══ SHEET 4: PRESENTES P2 / GALERIA P1 ══ */}
           {renderSheet(4,
-            <>
-              <p className={styles.chapter} style={{ opacity: 0 }}>·</p>
-              <h2 className={styles.chapterTitle} style={{ marginBottom: '0.35rem' }}>Mais Presentes</h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                <GiftRow img="/images/image_8.png"  name="Aparelho de Jantar" price="R$ 600 – R$ 1.200"/>
-                <GiftRow img="/images/image_9.png"  name="Adega / Frigobar"   price="R$ 1.200 – R$ 2.000"/>
-                <GiftRow img="/images/image_10.png" name="Robô Aspirador"     price="R$ 2.000 – R$ 3.500"/>
-                <GiftRow img="/images/image_11.png" name="Smart TV"           price="R$ 3.500 – R$ 5.000"/>
-                <GiftRow img="/images/image_12.png" name="Lua de Mel ✈"      price="Valor livre"/>
-              </div>
-              <div style={{
-                marginTop: '0.75rem', padding: '0.55rem 0.75rem',
-                border: '1px solid rgba(197,160,89,0.4)',
-                background: 'rgba(197,160,89,0.04)',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem',
-              }}>
-                <div>
-                  <p style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '0.62rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6B5F50', margin: 0 }}>
-                    Presentear em dinheiro?
-                  </p>
-                  <p style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '0.95rem', fontStyle: 'italic', color: text, margin: '0.08rem 0 0' }}>
-                    Pix — qualquer valor
-                  </p>
-                </div>
-                <button onClick={() => setIsPixOpen(true)}
-                  style={{ flexShrink: 0, background: '#19241C', color: gold, border: 'none', padding: '0.4rem 0.75rem', fontFamily: '"Cinzel Decorative",serif', fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.12em', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                  Ver Chave
-                </button>
-              </div>
-            </>,
-            <>
-              <p className={styles.chapter}>Galeria</p>
-              <h2 className={styles.chapterTitle}>Momentos</h2>
-              <div className={styles.galleryGrid}>
-                <img src="/images/image_13.png" className={styles.galleryImg} alt="Galeria"/>
-                <img src="/images/image_14.png" className={styles.galleryImg} alt="Galeria"/>
-                <img src="/images/image_15.png" className={styles.galleryImg} alt="Galeria"/>
-                <img src="/images/image_16.png" className={styles.galleryImg} alt="Galeria"/>
-              </div>
-            </>,
+            presentesP2Content,
+            galeriaP1Content,
           )}
 
-          {/* ══ SHEET 5: GALERIA P2 / RSVP ══ */}
           {renderSheet(5,
-            <>
-              <p className={styles.chapter} style={{ opacity: 0 }}>·</p>
-              <h2 className={styles.chapterTitle} style={{ marginBottom: '0.6rem' }}>Nosso Álbum</h2>
-              <div className={styles.galleryGrid}>
-                <img src="/images/image_17.png" className={styles.galleryImg} alt="Galeria"/>
-                <img src="/images/image_18.jpg" className={styles.galleryImg} alt="Galeria"/>
-                <img src="/images/image_19.jpg" className={styles.galleryImg} alt="Galeria"/>
-                <img src="/images/image_20.jpg" className={styles.galleryImg} alt="Galeria"/>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginTop: '0.4rem' }}>
-                <img src="/images/image_21.jpg" style={{ width: '100%', aspectRatio: '3/1', objectFit: 'cover', objectPosition: 'center top', borderRadius: 2 }} alt="Galeria"/>
-                <img src="/images/image_22.jpg" style={{ width: '100%', aspectRatio: '3/1', objectFit: 'cover', objectPosition: 'center top', borderRadius: 2 }} alt="Galeria"/>
-              </div>
-            </>,
-            <>
-              <p className={styles.chapter}>Confirmação</p>
-              <h2 className={styles.chapterTitle} style={{ marginBottom: '0.15rem' }}>Confirme sua Presença</h2>
-              <p className={styles.text} style={{ textAlign: 'center', fontSize: '0.78rem', marginBottom: '0.35rem' }}>
-                Confirmar até <strong>31 de agosto de 2026</strong>.
-              </p>
-              <div className={styles.rsvpWrapper}>
-                <RsvpForm/>
-              </div>
-            </>,
+            galeriaP2Content,
+            rsvpContent,
           )}
 
-          {/* ══ SHEET 6: ENCERRAMENTO / CONTRACAPA ══ */}
           {renderSheet(6,
-            <div style={{ textAlign: 'center', marginTop: 'auto', marginBottom: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.7rem' }}>
-              <p style={{ fontFamily: '"Great Vibes",cursive', fontSize: 'clamp(1.8rem,4.5vw,2.8rem)', color: gold, lineHeight: 1, margin: 0 }}>
-                Caio &amp; Sophia
-              </p>
-              <h2 style={{ fontFamily: '"Cinzel Decorative",serif', fontSize: 'clamp(0.8rem,1.8vw,1.1rem)', fontWeight: 400, color: green, letterSpacing: '0.12em', margin: 0 }}>
-                26 · 09 · 2026
-              </h2>
-              <Divider/>
-              <img src="/images/image_1.png" alt="Caio e Sophia"
-                style={{ width: '52%', display: 'block', borderRadius: '50%', aspectRatio: '1', objectFit: 'cover', objectPosition: 'center 15%', border: '2px solid rgba(197,160,89,0.5)', boxShadow: '0 8px 24px rgba(0,0,0,0.14)' }}/>
-            </div>,
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: ivory }}>
-              <div style={{ width: 54, height: 54, border: '1px solid rgba(197,160,89,0.5)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.2rem' }}>
-                <span style={{ fontFamily: '"Great Vibes",cursive', color: gold, fontSize: '1.6rem' }}>C&amp;S</span>
-              </div>
-              <div style={{ textAlign: 'center', color: 'rgba(197,160,89,0.65)', fontFamily: '"Cormorant Garamond",serif' }}>
-                <p style={{ fontSize: '0.95rem', margin: 0, letterSpacing: '0.14em', textTransform: 'uppercase' }}>Caio &amp; Sophia</p>
-                <p style={{ fontSize: '0.7rem', margin: '0.5rem 0', letterSpacing: '0.2em', opacity: 0.8 }}>26 · 09 · 2026</p>
-                <p style={{ fontSize: '0.7rem', fontStyle: 'italic', opacity: 0.55 }}>Feito com amor para o grande dia.</p>
-              </div>
-            </div>,
+            encerramentoContent,
+            contracapaContent,
             true,
           )}
 

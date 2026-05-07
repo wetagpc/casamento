@@ -418,71 +418,100 @@
   .persistentCountdown .countdownLabel { font-size: 0.42rem; }
 }
 
-/* ─── Portrait mobile — single page fallback ─── */
-@media (max-width: 768px) and (orientation: portrait) {
-  .book {
-    width: 100vw; max-width: 100vw;
-    height: calc(100dvh - 112px);
-    max-height: none;
-  }
-  .page { width: 100%; left: 0; transform-origin: left center; }
-  .front, .back { border-radius: 0; border: none; }
-  .coverFront { border-radius: 0; }
-  .coverBack  { border-radius: 0; }
-  .coverFront::after, .coverFront::before { display: none; }
-  .navBar { justify-content: flex-start; padding: 0.4rem 1rem; }
-  .fixedWrapper { padding-top: 44px; padding-bottom: 68px; }
+/* ─── Portrait mobile — swipe pages ─── */
+.mobileContainer {
+  position: fixed; inset: 0; z-index: 10;
+  display: none;
+  flex-direction: column;
+  background: #111412;
+  overflow: hidden;
 }
 
-/* ─── Rotate overlay ─── */
-@keyframes rotatePhone {
-  0%   { transform: rotate(0deg); }
-  40%  { transform: rotate(90deg); }
-  60%  { transform: rotate(90deg); }
-  100% { transform: rotate(0deg); }
+.mobilePage {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  background: #FCFAF6;
+  transition: transform 0.38s cubic-bezier(0.2, 0.8, 0.2, 1),
+              opacity   0.28s ease;
 }
 
-.rotateOverlay {
-  position: fixed; inset: 0; z-index: 10000;
-  background: rgba(10,13,11,0.97);
+.mobilePageCover {
+  background: linear-gradient(160deg, #19241C 0%, #2c3e2f 45%, #111A13 100%);
+}
+
+.mobilePageBack {
+  background: linear-gradient(160deg, #19241C 0%, #2c3e2f 45%, #111A13 100%);
+}
+
+.mobilePageContent {
+  flex: 1;
+  overflow: hidden;
+  padding: 2rem 1.4rem 1.2rem;
+  display: flex; flex-direction: column;
+}
+
+.mobileScrollable {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobileTopBar {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 44px;
   display: flex; align-items: center; justify-content: center;
-  backdrop-filter: blur(8px);
+  background: rgba(17,20,18,0.88);
+  backdrop-filter: blur(6px);
+  z-index: 5;
+  border-bottom: 1px solid rgba(197,160,89,0.15);
 }
 
-.rotateContent {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 1.2rem; padding: 2rem; text-align: center;
-}
-
-.rotateIcon {
-  animation: rotatePhone 2.4s ease-in-out infinite;
-  display: block;
-}
-
-.rotateTitle {
+.mobileTopTitle {
   font-family: 'Cinzel Decorative', serif;
-  font-size: 1rem; font-weight: 400;
-  color: #C5A059; letter-spacing: 0.15em;
-  text-transform: uppercase; margin: 0;
-}
-
-.rotateSubtitle {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1rem; font-style: italic;
-  color: rgba(252,250,246,0.7); margin: 0; line-height: 1.5;
-}
-
-.rotateDismiss {
-  background: none;
-  border: 1px solid rgba(197,160,89,0.35);
-  color: rgba(197,160,89,0.6);
-  font-family: 'Cinzel Decorative', serif;
-  font-size: 0.5rem; letter-spacing: 0.15em;
+  font-size: 0.5rem; letter-spacing: 0.22em;
   text-transform: uppercase;
-  padding: 0.55rem 1.2rem; cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 0.5rem;
+  color: rgba(197,160,89,0.75);
 }
-.rotateDismiss:hover {
-  border-color: #C5A059; color: #C5A059;
+
+.mobileNavBar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 52px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px;
+  background: rgba(17,20,18,0.88);
+  backdrop-filter: blur(6px);
+  border-top: 1px solid rgba(197,160,89,0.15);
+  z-index: 5;
+}
+
+.mobileDot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: rgba(197,160,89,0.3);
+  transition: background 0.25s, transform 0.25s;
+  cursor: pointer;
+}
+
+.mobileDotActive {
+  background: #C5A059;
+  transform: scale(1.4);
+}
+
+.mobilePrev, .mobileNext {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 28px; height: 28px; border-radius: 50%;
+  background: none; border: none;
+  color: rgba(197,160,89,0.7);
+  font-size: 1.1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.mobilePrev { left: 12px; }
+.mobileNext { right: 12px; }
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .mobileContainer { display: flex; }
+  .scrollContainer  { display: none; }
+  .fixedWrapper     { display: none; }
+  .navBar           { display: none; }
+  .persistentCountdown { display: none; }
+  .scrollPrompt     { display: none; }
 }
