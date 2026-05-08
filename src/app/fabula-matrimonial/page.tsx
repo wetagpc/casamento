@@ -672,7 +672,7 @@ export default function Fabula() {
   return (
     <div className={styles.bodyWrapper}>
 
-      <audio ref={audioRef} src="/musica.m4a" loop preload="auto" />
+      <audio ref={audioRef} src="/musica.mp3" loop preload="auto" />
 
       {/* ── Music toggle ── */}
       <button
