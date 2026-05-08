@@ -735,25 +735,28 @@ export default function Fabula() {
       {/* ══ MOBILE PORTRAIT — immersive open book ══ */}
       <div className={styles.mobileContainer}>
 
-        {/* Section shortcuts */}
-        <div className={styles.mobileTopNav}>
-          {[
-            { label: 'História',    target: 2,  end: 3  },
-            { label: 'Programação', target: 4,  end: 4  },
-            { label: 'Local',       target: 5,  end: 5  },
-            { label: 'Traje',       target: 6,  end: 6  },
-            { label: 'Presentes',   target: 7,  end: 8  },
-            { label: 'Galeria',     target: 9,  end: 10 },
-            { label: 'Confirmar',   target: 11, end: 13 },
-          ].map(s => (
-            <button
-              key={s.label}
-              className={[styles.mobileTopNavBtn, mobilePage >= s.target && mobilePage <= s.end ? styles.mobileTopNavBtnActive : ''].join(' ')}
-              onClick={() => navigateTo(s.target)}
-            >
-              {s.label}
-            </button>
-          ))}
+        {/* Top section: brand + section shortcuts */}
+        <div className={styles.mobileTopSection}>
+          <p className={styles.mobileBrandHeader}>Caio &amp; Sophia</p>
+          <div className={styles.mobileTopNav}>
+            {[
+              { label: 'História',    target: 2,  end: 3  },
+              { label: 'Programação', target: 4,  end: 4  },
+              { label: 'Local',       target: 5,  end: 5  },
+              { label: 'Traje',       target: 6,  end: 6  },
+              { label: 'Presentes',   target: 7,  end: 8  },
+              { label: 'Galeria',     target: 9,  end: 10 },
+              { label: 'Confirmar',   target: 11, end: 13 },
+            ].map(s => (
+              <button
+                key={s.label}
+                className={[styles.mobileTopNavBtn, mobilePage >= s.target && mobilePage <= s.end ? styles.mobileTopNavBtnActive : ''].join(' ')}
+                onClick={() => navigateTo(s.target)}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className={styles.mobileBook}>

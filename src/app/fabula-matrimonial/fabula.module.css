@@ -536,6 +536,26 @@
 .mobilePrev { left: 0; }
 .mobileNext { right: 0; }
 
+/* Top section — brand header + nav grouped together */
+.mobileTopSection {
+  width: 91vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mobileBrandHeader {
+  font-family: 'Great Vibes', cursive;
+  font-size: 1.5rem;
+  color: #C5A059;
+  text-align: center;
+  line-height: 1;
+  margin: 0;
+  padding: 0.15rem 0 0.4rem;
+  text-shadow: 0 0 18px rgba(197,160,89,0.35);
+  letter-spacing: 0.02em;
+}
+
 /* Mobile section nav — 2 rows, 4 items row 1 · 3 centered row 2 */
 .mobileTopNav {
   width: 91vw;
