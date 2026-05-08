@@ -430,8 +430,8 @@ export default function Fabula() {
       <div className={styles.quote}>
         "Até que, numa tarde na Rua John Pinheiro, uma voz familiar atravessou o ar — <em>Pescoço!</em>"
       </div>
-      <div style={{ flex: 1 }}/>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.25rem', height: '32%', flexShrink: 0 }}>
+      <div style={{ flex: 1, minHeight: 0 }}/>
+      <div style={{ flex: '0 0 35%', minHeight: 0, overflow: 'hidden', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.25rem' }}>
         <img src="/images/image_21.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', borderRadius: 2, display: 'block' }}/>
         <img src="/images/image_22.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', borderRadius: 2, display: 'block' }}/>
       </div>
