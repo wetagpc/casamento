@@ -497,13 +497,15 @@ export default function Fabula() {
   );
 
   const localContent = (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-      <p className={styles.chapter}>O Local</p>
-      <h2 className={styles.chapterTitle}>Caldas — Minas Gerais</h2>
-      <p className={styles.text} style={{ fontSize: '0.87rem', textAlign: 'center', marginBottom: '0.7rem' }}>
-        Al. Poços de Caldas, 163 — Laranjeiras, Caldas MG.<br/>Ambiente ao ar livre.
-      </p>
-      <div className={styles.localGrid}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <div>
+        <p className={styles.chapter}>O Local</p>
+        <h2 className={styles.chapterTitle}>Caldas — Minas Gerais</h2>
+        <p className={styles.text} style={{ fontSize: '0.87rem', textAlign: 'center', marginBottom: 0 }}>
+          Al. Poços de Caldas, 163 — Laranjeiras, Caldas MG.<br/>Ambiente ao ar livre.
+        </p>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
         <div className={styles.localCard}>
           <div className={styles.localCardTitle}><span>🚗</span> Estacionamento</div>
           <p className={styles.text} style={{ fontSize: '0.8rem', marginBottom: 0 }}>Disponível no local.</p>
@@ -512,7 +514,7 @@ export default function Fabula() {
           <div className={styles.localCardTitle}><span>🏡</span> Hospedagem</div>
           <p className={styles.text} style={{ fontSize: '0.8rem', marginBottom: 0 }}>Espaço para familiares distantes.</p>
         </div>
-        <div className={styles.localCard} style={{ gridColumn: '1 / -1' }}>
+        <div className={styles.localCard}>
           <div className={styles.localCardTitle}><span>📍</span> Endereço</div>
           <p className={styles.text} style={{ fontSize: '0.8rem', marginBottom: 0 }}>Laranjeiras — Caldas, MG · CEP 37780-000</p>
         </div>
