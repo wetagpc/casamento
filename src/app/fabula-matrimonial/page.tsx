@@ -511,10 +511,6 @@ export default function Fabula() {
           <p className={styles.text} style={{ fontSize: '0.8rem', marginBottom: 0 }}>Disponível no local.</p>
         </div>
         <div className={styles.localCard}>
-          <div className={styles.localCardTitle}><span>🏡</span> Hospedagem</div>
-          <p className={styles.text} style={{ fontSize: '0.8rem', marginBottom: 0 }}>Espaço para familiares distantes.</p>
-        </div>
-        <div className={styles.localCard}>
           <div className={styles.localCardTitle}><span>📍</span> Endereço</div>
           <p className={styles.text} style={{ fontSize: '0.8rem', marginBottom: 0 }}>Laranjeiras — Caldas, MG · CEP 37780-000</p>
         </div>
