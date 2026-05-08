@@ -224,8 +224,22 @@ export default function Fabula() {
     return 'none';
   }
 
+  /* ── Audio unlock — must be called inside a native gesture handler ── */
+  function ensureAudio() {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (audio.paused) {
+      audio.muted = false;
+      audio.play().then(() => setPlaying(true)).catch(() => {});
+    } else if (audio.muted) {
+      audio.muted = false;
+      setPlaying(true);
+    }
+  }
+
   /* ── Dot / button navigation (no drag) ── */
   function navigateTo(target: number) {
+    ensureAudio();
     if (target < 0 || target >= NUM_MOBILE_PAGES || target === mobilePage) return;
     if (activeAngle !== null || snapping) return;
     const dir: 'fwd' | 'bwd' = target > mobilePage ? 'fwd' : 'bwd';
@@ -242,6 +256,7 @@ export default function Fabula() {
 
   /* ── Touch drag — page follows finger ── */
   function onTouchStart(e: React.TouchEvent) {
+    ensureAudio();
     if (snapping) return;
     if (snapTimer.current) clearTimeout(snapTimer.current);
     const t = e.touches[0];
