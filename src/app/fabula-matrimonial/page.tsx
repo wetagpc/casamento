@@ -497,13 +497,15 @@ export default function Fabula() {
   );
 
   const localContent = (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-      <p className={styles.chapter}>O Local</p>
-      <h2 className={styles.chapterTitle}>Caldas — Minas Gerais</h2>
-      <p className={styles.text} style={{ fontSize: '0.87rem', textAlign: 'center', marginBottom: '1rem' }}>
-        Al. Poços de Caldas, 163 — Laranjeiras, Caldas MG.<br/>Ambiente ao ar livre.
-      </p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '1rem' }}>
+      <div>
+        <p className={styles.chapter} style={{ marginBottom: '0.2rem' }}>O Local</p>
+        <h2 className={styles.chapterTitle} style={{ marginBottom: '0.5rem' }}>Caldas — Minas Gerais</h2>
+        <p className={styles.text} style={{ fontSize: '0.87rem', textAlign: 'center', margin: 0 }}>
+          Al. Poços de Caldas, 163 — Laranjeiras, Caldas MG.<br/>Ambiente ao ar livre.
+        </p>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
         <div className={styles.localCard}>
           <div className={styles.localCardTitle}><span>🚗</span> Estacionamento</div>
           <p className={styles.text} style={{ fontSize: '0.8rem', marginBottom: 0 }}>Disponível no local.</p>
@@ -518,7 +520,7 @@ export default function Fabula() {
         </div>
       </div>
       <a href="https://maps.google.com/?q=Al.+Po%C3%A7os+de+Caldas,+163+Laranjeiras+Caldas+MG+37780-000"
-        target="_blank" rel="noreferrer" className={styles.mapLink} style={{ marginTop: 'auto' }}>
+        target="_blank" rel="noreferrer" className={styles.mapLink}>
         Ver Rota no Google Maps
       </a>
     </div>
