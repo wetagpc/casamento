@@ -333,8 +333,8 @@ export default function Fabula() {
         style={{ transform: mobileTransform(index), zIndex: mobileZ(index), transition: mobileTransition(index) }}
       >
         <div className={[styles.mobilePageContent, scrollable ? styles.mobileScrollable : ''].filter(Boolean).join(' ')}>
-          {!dark && corners}
           {content}
+          {!dark && corners}
         </div>
       </div>
     );
