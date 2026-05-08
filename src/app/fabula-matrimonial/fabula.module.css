@@ -418,65 +418,71 @@
   .persistentCountdown .countdownLabel { font-size: 0.42rem; }
 }
 
-/* ─── Portrait mobile — book with spine ─── */
+/* ─── Portrait mobile — floating book object ─── */
 .mobileContainer {
   position: fixed; inset: 0; z-index: 10;
   display: none;
   flex-direction: column;
-  background: #111412;
-  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  /* transparent — body dark background + stars show through */
 }
 
-.mobileTopBar {
-  flex: 0 0 44px;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(17,20,18,0.97);
-  border-bottom: 1px solid rgba(197,160,89,0.15);
-}
-
-.mobileTopTitle {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: 0.5rem; letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(197,160,89,0.75);
-}
-
-/* Book row: spine on left, pages on right */
-.mobileBookArea {
-  flex: 1;
+/* The physical book rectangle */
+.mobileBook {
+  width: 88vw;
+  height: 74dvh;
   display: flex;
   flex-direction: row;
+  border-radius: 3px 8px 8px 3px;
+  box-shadow:
+    -6px 4px 20px rgba(0,0,0,0.85),
+    8px 16px 48px rgba(0,0,0,0.65),
+    inset 0 0 0 1px rgba(197,160,89,0.1);
   overflow: hidden;
+  position: relative;
 }
 
-/* The visible "lombada" — stack of already-read pages */
-.mobileSpine {
-  flex: 0 0 30px;
+/* Left half: already-read pages */
+.mobileLeftPages {
+  flex: 0 0 28%;
   background:
     repeating-linear-gradient(
-      to bottom,
-      rgba(252,250,246,0.07) 0px, rgba(252,250,246,0.07) 1px,
-      transparent 1px, transparent 5px
+      to right,
+      rgba(252,250,246,0.11) 0px, rgba(252,250,246,0.11) 1px,
+      transparent 1px, transparent 3px
     ),
-    linear-gradient(to right, #060A07, #111A13 60%, #19241C);
+    linear-gradient(180deg, #0D1510 0%, #19241C 55%, #111A13 100%);
   position: relative;
-  box-shadow: inset -3px 0 6px rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
 }
-.mobileSpine::after {
+/* Spine crease shadow */
+.mobileLeftPages::after {
   content: '';
-  position: absolute; right: 0; top: 0; bottom: 0; width: 1px;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%, rgba(197,160,89,0.45) 15%,
-    rgba(197,160,89,0.45) 85%, transparent 100%
-  );
+  position: absolute; right: 0; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(to right, rgba(197,160,89,0.2), rgba(0,0,0,0.6));
+  z-index: 2;
 }
 
+/* Vertical monogram on the spine */
+.mobileSpineMonogram {
+  font-family: 'Great Vibes', cursive;
+  color: rgba(197,160,89,0.28);
+  font-size: 1rem;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  user-select: none;
+  letter-spacing: 0.05em;
+}
+
+/* Right half: the flipping page */
 .mobilePagesContainer {
   flex: 1;
-  position: relative; overflow: hidden;
-  perspective: 1400px;
-  perspective-origin: 0% 50%;
+  position: relative;
+  overflow: hidden;
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
 }
 
 .mobilePage {
@@ -496,7 +502,7 @@
 .mobilePageContent {
   flex: 1;
   overflow: hidden;
-  padding: 1.5rem 1.2rem 1rem;
+  padding: 1.4rem 1rem 1rem;
   display: flex; flex-direction: column;
   position: relative;
 }
@@ -507,13 +513,14 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.mobileNavBar {
-  flex: 0 0 52px;
-  display: flex; align-items: center; justify-content: center;
+/* Nav dots below the book */
+.mobileNavDots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 6px;
-  background: rgba(17,20,18,0.97);
-  border-top: 1px solid rgba(197,160,89,0.15);
   position: relative;
+  padding: 0 2rem;
 }
 
 .mobileDot {
@@ -521,6 +528,7 @@
   background: rgba(197,160,89,0.3);
   transition: background 0.25s, transform 0.25s;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .mobileDotActive {
@@ -533,11 +541,11 @@
   width: 28px; height: 28px; border-radius: 50%;
   background: none; border: none;
   color: rgba(197,160,89,0.7);
-  font-size: 1.1rem; cursor: pointer;
+  font-size: 1.2rem; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
 }
-.mobilePrev { left: 12px; }
-.mobileNext { right: 12px; }
+.mobilePrev { left: 0; }
+.mobileNext { right: 0; }
 
 @media (max-width: 768px) and (orientation: portrait) {
   .mobileContainer { display: flex; }

@@ -657,23 +657,23 @@ export default function Fabula() {
         }}/>
       ))}
 
-      {/* ══ MOBILE PORTRAIT — 14 swipe pages ══ */}
+      {/* ══ MOBILE PORTRAIT — floating book object ══ */}
       <div className={styles.mobileContainer}>
-        {/* Top bar */}
-        <div className={styles.mobileTopBar}>
-          <span className={styles.mobileTopTitle}>Caio &amp; Sophia · 26.09.2026</span>
-        </div>
 
-        {/* Book area: spine + pages */}
-        <div className={styles.mobileBookArea}>
-          <div className={styles.mobileSpine}/>
+        {/* The physical book */}
+        <div className={styles.mobileBook}>
+          {/* Left: already-read pages (spine side) */}
+          <div className={styles.mobileLeftPages}>
+            <span className={styles.mobileSpineMonogram}>Caio &amp; Sophia</span>
+          </div>
+          {/* Right: flipping page */}
           <div className={styles.mobilePagesContainer}>
             {mobilePages}
           </div>
         </div>
 
-        {/* Bottom nav */}
-        <div className={styles.mobileNavBar}>
+        {/* Nav dots below the book */}
+        <div className={styles.mobileNavDots}>
           <button className={styles.mobilePrev} onClick={() => navigateTo(mobilePage - 1)} aria-label="Anterior">‹</button>
           {Array.from({ length: NUM_MOBILE_PAGES }, (_, i) => (
             <div
@@ -685,6 +685,7 @@ export default function Fabula() {
           ))}
           <button className={styles.mobileNext} onClick={() => navigateTo(mobilePage + 1)} aria-label="Próximo">›</button>
         </div>
+
       </div>
 
       {/* ══ DESKTOP — scroll-driven flipbook ══ */}
