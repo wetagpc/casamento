@@ -418,71 +418,35 @@
   .persistentCountdown .countdownLabel { font-size: 0.42rem; }
 }
 
-/* ─── Portrait mobile — floating book object ─── */
+/* ─── Portrait mobile — immersive open book ─── */
 .mobileContainer {
   position: fixed; inset: 0; z-index: 10;
   display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.9rem;
-  /* transparent — body dark background + stars show through */
+  gap: 0.65rem;
 }
 
-/* The physical book rectangle */
+/* Page area — the visible "book", floats on the dark bg */
 .mobileBook {
-  width: 88vw;
-  height: 74dvh;
-  display: flex;
-  flex-direction: row;
-  border-radius: 3px 8px 8px 3px;
+  width: 91vw;
+  height: 82dvh;
+  position: relative;
+  border-radius: 2px 5px 5px 2px;
   box-shadow:
-    -6px 4px 20px rgba(0,0,0,0.85),
-    8px 16px 48px rgba(0,0,0,0.65),
-    inset 0 0 0 1px rgba(197,160,89,0.1);
-  overflow: hidden;
-  position: relative;
+    -3px 0 10px rgba(0,0,0,0.5),
+    0 12px 40px rgba(0,0,0,0.65),
+    3px 6px 20px rgba(0,0,0,0.4);
 }
 
-/* Left half: already-read pages */
-.mobileLeftPages {
-  flex: 0 0 28%;
-  background:
-    repeating-linear-gradient(
-      to right,
-      rgba(252,250,246,0.11) 0px, rgba(252,250,246,0.11) 1px,
-      transparent 1px, transparent 3px
-    ),
-    linear-gradient(180deg, #0D1510 0%, #19241C 55%, #111A13 100%);
-  position: relative;
-  display: flex; align-items: center; justify-content: center;
-}
-/* Spine crease shadow */
-.mobileLeftPages::after {
-  content: '';
-  position: absolute; right: 0; top: 0; bottom: 0; width: 3px;
-  background: linear-gradient(to right, rgba(197,160,89,0.2), rgba(0,0,0,0.6));
-  z-index: 2;
-}
-
-/* Vertical monogram on the spine */
-.mobileSpineMonogram {
-  font-family: 'Great Vibes', cursive;
-  color: rgba(197,160,89,0.28);
-  font-size: 1rem;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  user-select: none;
-  letter-spacing: 0.05em;
-}
-
-/* Right half: the flipping page */
+/* Perspective wrapper fills the book exactly */
 .mobilePagesContainer {
-  flex: 1;
-  position: relative;
+  position: absolute; inset: 0;
   overflow: hidden;
-  perspective: 1200px;
-  perspective-origin: 50% 50%;
+  border-radius: inherit;
+  perspective: 900px;
+  perspective-origin: 30% 50%;
 }
 
 .mobilePage {
@@ -495,6 +459,21 @@
   will-change: transform;
 }
 
+/* Binding-shadow overlay — simulates page curvature at the spine */
+.mobilePage::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0,0,0,0.22) 0%,
+    rgba(0,0,0,0.07) 8%,
+    transparent 22%
+  );
+  z-index: 5;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
 .mobilePageCover {
   background: linear-gradient(160deg, #19241C 0%, #2c3e2f 45%, #111A13 100%);
 }
@@ -502,7 +481,7 @@
 .mobilePageContent {
   flex: 1;
   overflow: hidden;
-  padding: 1.4rem 1rem 1rem;
+  padding: 1.4rem 1.1rem 1rem 1.5rem;
   display: flex; flex-direction: column;
   position: relative;
 }

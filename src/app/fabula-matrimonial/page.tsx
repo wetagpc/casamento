@@ -221,7 +221,7 @@ export default function Fabula() {
     if (flippingTo === null) return 'none';
     const fwd = flippingTo > mobilePage;
     const active = fwd ? index === mobilePage : index === flippingTo;
-    return active ? 'transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1)' : 'none';
+    return active ? 'transform 0.55s cubic-bezier(0.35, 0.0, 0.25, 1.0)' : 'none';
   }
 
   /* ── Swipe handlers ── */
@@ -657,22 +657,15 @@ export default function Fabula() {
         }}/>
       ))}
 
-      {/* ══ MOBILE PORTRAIT — floating book object ══ */}
+      {/* ══ MOBILE PORTRAIT — immersive open book ══ */}
       <div className={styles.mobileContainer}>
 
-        {/* The physical book */}
         <div className={styles.mobileBook}>
-          {/* Left: already-read pages (spine side) */}
-          <div className={styles.mobileLeftPages}>
-            <span className={styles.mobileSpineMonogram}>Caio &amp; Sophia</span>
-          </div>
-          {/* Right: flipping page */}
           <div className={styles.mobilePagesContainer}>
             {mobilePages}
           </div>
         </div>
 
-        {/* Nav dots below the book */}
         <div className={styles.mobileNavDots}>
           <button className={styles.mobilePrev} onClick={() => navigateTo(mobilePage - 1)} aria-label="Anterior">‹</button>
           {Array.from({ length: NUM_MOBILE_PAGES }, (_, i) => (
