@@ -154,7 +154,7 @@ export default function Fabula() {
   /* Countdown */
   useEffect(() => {
     function tick() {
-      const diff = new Date('2026-09-26T16:00:00').getTime() - Date.now();
+      const diff = new Date('2026-09-26T15:00:00').getTime() - Date.now();
       if (diff <= 0) { setCountdown({ days: '00', hours: '00', minutes: '00', seconds: '00' }); return; }
       setCountdown({
         days:    String(Math.floor(diff / 86400000)).padStart(2, '0'),
@@ -467,7 +467,7 @@ export default function Fabula() {
       </p>
       <div>
         <div className={styles.timelineItem}>
-          <div className={styles.timelineTime}>16h</div>
+          <div className={styles.timelineTime}>15h</div>
           <div>
             <h4 style={{ fontFamily: '"Cormorant Garamond",serif', color: text, fontSize: '1.1rem', marginBottom: '0.08rem', fontWeight: 600, letterSpacing: '0.04em' }}>
               Cerimônia
