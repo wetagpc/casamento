@@ -527,13 +527,14 @@ export default function Fabula() {
   );
 
   const trajeContent = (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-      <p className={styles.chapter}>Traje</p>
-      <h2 className={styles.chapterTitle}>Esporte Fino</h2>
-      <p className={styles.text} style={{ fontSize: '0.87rem', marginBottom: 0 }}>
-        O casamento será ao ar livre. Sugerimos tons que harmonizam com o cenário:
-      </p>
-      <div style={{ flex: 1 }}/>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '1rem' }}>
+      <div>
+        <p className={styles.chapter} style={{ marginBottom: '0.2rem' }}>Traje</p>
+        <h2 className={styles.chapterTitle} style={{ marginBottom: '0.5rem' }}>Esporte Fino</h2>
+        <p className={styles.text} style={{ fontSize: '0.87rem', margin: 0 }}>
+          O casamento será ao ar livre. Sugerimos tons que harmonizam com o cenário:
+        </p>
+      </div>
       <div className={styles.swatchGrid}>
         {[
           { bg: '#D2C4A8', name: 'Areia'   },
@@ -546,12 +547,13 @@ export default function Fabula() {
           </div>
         ))}
       </div>
-      <div style={{ flex: 1 }}/>
-      <p className={styles.text} style={{ fontSize: '0.82rem', fontStyle: 'italic', textAlign: 'center', margin: 0 }}>
-        Para as damas, evitem salto agulha no gramado.
-      </p>
-      <div className={styles.dressCodeAlert}>
-        Estas cores são apenas sugestão. <strong>Venha como você é.</strong><br/>O que importa é a sua presença.
+      <div>
+        <p className={styles.text} style={{ fontSize: '0.82rem', fontStyle: 'italic', textAlign: 'center', margin: '0 0 0.5rem' }}>
+          Para as damas, evitem salto agulha no gramado.
+        </p>
+        <div className={styles.dressCodeAlert}>
+          Estas cores são apenas sugestão. <strong>Venha como você é.</strong><br/>O que importa é a sua presença.
+        </div>
       </div>
     </div>
   );
