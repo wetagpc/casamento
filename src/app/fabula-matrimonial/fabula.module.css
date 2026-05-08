@@ -425,13 +425,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.65rem;
+  gap: 0.4rem;
 }
 
 /* Page area — the visible "book", floats on the dark bg */
 .mobileBook {
   width: 91vw;
-  height: 82dvh;
+  height: 71dvh;
   position: relative;
   border-radius: 2px 5px 5px 2px;
   box-shadow:
@@ -527,6 +527,65 @@
 .mobilePrev { left: 0; }
 .mobileNext { right: 0; }
 
+/* Mobile section nav */
+.mobileTopNav {
+  width: 91vw;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  border-bottom: 1px solid rgba(197,160,89,0.18);
+}
+.mobileTopNav::-webkit-scrollbar { display: none; }
+
+.mobileTopNavBtn {
+  flex-shrink: 0;
+  background: none; border: none;
+  color: rgba(197,160,89,0.5);
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.44rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  padding: 0.45rem 0.75rem;
+  white-space: nowrap;
+  transition: color 0.2s;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.mobileTopNavBtnActive {
+  color: #C5A059;
+  border-bottom-color: #C5A059;
+}
+
+/* Compact mobile countdown */
+.mobileCountdown {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.1rem 0;
+}
+.mobileCountdownItem { text-align: center; }
+.mobileCountdownNum {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1rem;
+  color: #C5A059;
+  display: block;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(197,160,89,0.3);
+}
+.mobileCountdownLabel {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.38rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(197,160,89,0.4);
+  display: block;
+  margin-top: 0.1rem;
+}
+
 @media (max-width: 768px) and (orientation: portrait) {
   .mobileContainer { display: flex; }
   .scrollContainer  { display: none; }
@@ -534,4 +593,52 @@
   .navBar           { display: none; }
   .persistentCountdown { display: none; }
   .scrollPrompt     { display: none; }
+
+  /* Typography — prevent vw-based clamps from becoming microscopic */
+  .chapter { font-size: 0.55rem; }
+  .chapterTitle { font-size: 1.1rem; margin-bottom: 0.4rem; }
+  .text { font-size: 0.82rem; }
+  .dropCap { font-size: 2rem; }
+
+  /* Gallery images — shorter aspect ratio fits without overflow */
+  .galleryImg { aspect-ratio: 3/2; }
+}
+
+/* ─── Page-flip hint (cover only) ─── */
+@keyframes cornerLift {
+  0%, 55%, 100% { transform: scale(1); opacity: 0.4; }
+  18%, 38%      { transform: scale(2.8) perspective(70px) rotateX(-4deg) rotateY(-16deg); opacity: 0.95; }
+}
+
+@keyframes swipeHint {
+  0%, 8%  { opacity: 0;    transform: translateX(18px);  }
+  26%     { opacity: 0.85; transform: translateX(0px);   }
+  56%     { opacity: 0.85; transform: translateX(-18px); }
+  72%     { opacity: 0;    transform: translateX(-28px); }
+  100%    { opacity: 0;    transform: translateX(18px);  }
+}
+
+.mobileFlipHint {
+  position: absolute; inset: 0;
+  pointer-events: none; z-index: 150;
+  border-radius: inherit;
+}
+
+.mobileCornerPeel {
+  position: absolute; bottom: 0; right: 0;
+  width: 52px; height: 52px;
+  background: linear-gradient(135deg, transparent 50%, rgba(197,160,89,0.22) 50%);
+  transform-origin: 100% 100%;
+  border-radius: 0 0 4px 0;
+  animation: cornerLift 3.4s 1.2s ease-in-out infinite;
+}
+
+.mobileSwipeHintWrap {
+  position: absolute; bottom: 24%; left: 0; right: 0;
+  display: flex; justify-content: center;
+}
+
+.mobileSwipeHint {
+  display: flex; align-items: center; gap: 7px;
+  animation: swipeHint 3.4s 1.2s ease-in-out infinite;
 }

@@ -649,10 +649,10 @@ export default function Fabula() {
     renderMobilePage(4,  celebracaoContent),
     renderMobilePage(5,  localContent),
     renderMobilePage(6,  trajeContent),
-    renderMobilePage(7,  presentesP1Content),
-    renderMobilePage(8,  presentesP2Content),
-    renderMobilePage(9,  galeriaP1Content),
-    renderMobilePage(10, galeriaP2Content),
+    renderMobilePage(7,  presentesP1Content, { scrollable: true }),
+    renderMobilePage(8,  presentesP2Content, { scrollable: true }),
+    renderMobilePage(9,  galeriaP1Content,  { scrollable: true }),
+    renderMobilePage(10, galeriaP2Content,  { scrollable: true }),
     renderMobilePage(11, rsvpContent,        { scrollable: true }),
     renderMobilePage(12, encerramentoContent, { dark: true }),
     renderMobilePage(13, contracapaContent,   { dark: true }),
@@ -712,6 +712,27 @@ export default function Fabula() {
       {/* ══ MOBILE PORTRAIT — immersive open book ══ */}
       <div className={styles.mobileContainer}>
 
+        {/* Section shortcuts */}
+        <div className={styles.mobileTopNav}>
+          {[
+            { label: 'História',    target: 2,  end: 3  },
+            { label: 'Programação', target: 4,  end: 4  },
+            { label: 'Local',       target: 5,  end: 5  },
+            { label: 'Traje',       target: 6,  end: 6  },
+            { label: 'Presentes',   target: 7,  end: 8  },
+            { label: 'Galeria',     target: 9,  end: 10 },
+            { label: 'Confirmar',   target: 11, end: 13 },
+          ].map(s => (
+            <button
+              key={s.label}
+              className={[styles.mobileTopNavBtn, mobilePage >= s.target && mobilePage <= s.end ? styles.mobileTopNavBtnActive : ''].join(' ')}
+              onClick={() => navigateTo(s.target)}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+
         <div className={styles.mobileBook}>
           <div
             className={styles.mobilePagesContainer}
@@ -722,6 +743,24 @@ export default function Fabula() {
           >
             {mobilePages}
           </div>
+
+          {/* Flip hint — only on cover, disappears once user navigates */}
+          {mobilePage === 0 && (
+            <div className={styles.mobileFlipHint} aria-hidden="true">
+              <div className={styles.mobileCornerPeel}/>
+              <div className={styles.mobileSwipeHintWrap}>
+                <div className={styles.mobileSwipeHint}>
+                  <svg width="38" height="18" viewBox="0 0 38 18" fill="none">
+                    <path d="M25 2L17 9L25 16" stroke="rgba(197,160,89,0.9)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M36 2L28 9L36 16" stroke="rgba(197,160,89,0.45)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span style={{ fontFamily: '"Cinzel Decorative",serif', fontSize: '0.42rem', color: 'rgba(197,160,89,0.72)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+                    Virar
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className={styles.mobileNavDots}>
@@ -735,6 +774,16 @@ export default function Fabula() {
             />
           ))}
           <button className={styles.mobileNext} onClick={() => navigateTo(mobilePage + 1)} aria-label="Próximo">›</button>
+        </div>
+
+        {/* Compact countdown */}
+        <div className={styles.mobileCountdown}>
+          {(['days','hours','minutes','seconds'] as const).map((k, i) => (
+            <div key={k} className={styles.mobileCountdownItem}>
+              <span className={styles.mobileCountdownNum}>{countdown[k]}</span>
+              <span className={styles.mobileCountdownLabel}>{['dias','horas','min','seg'][i]}</span>
+            </div>
+          ))}
         </div>
 
       </div>
