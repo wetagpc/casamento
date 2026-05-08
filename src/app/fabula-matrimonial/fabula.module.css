@@ -527,20 +527,15 @@
 .mobilePrev { left: 0; }
 .mobileNext { right: 0; }
 
-/* Mobile section nav */
+/* Mobile section nav — 2-column grid so all items are visible */
 .mobileTopNav {
   width: 91vw;
-  display: flex;
-  align-items: center;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   border-bottom: 1px solid rgba(197,160,89,0.18);
 }
-.mobileTopNav::-webkit-scrollbar { display: none; }
 
 .mobileTopNavBtn {
-  flex-shrink: 0;
   background: none; border: none;
   color: rgba(197,160,89,0.5);
   font-family: 'Cinzel Decorative', serif;
@@ -548,11 +543,15 @@
   text-transform: uppercase;
   letter-spacing: 0.14em;
   cursor: pointer;
-  padding: 0.45rem 0.75rem;
+  padding: 0.4rem 0.5rem;
+  text-align: center;
   white-space: nowrap;
   transition: color 0.2s;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
+}
+.mobileTopNavBtn:nth-child(7) {
+  grid-column: 1 / -1;
 }
 .mobileTopNavBtnActive {
   color: #C5A059;
@@ -562,7 +561,7 @@
 /* Compact mobile countdown */
 .mobileCountdown {
   display: flex;
-  gap: 1.2rem;
+  gap: 2rem;
   align-items: center;
   justify-content: center;
   padding: 0.1rem 0;
@@ -570,20 +569,20 @@
 .mobileCountdownItem { text-align: center; }
 .mobileCountdownNum {
   font-family: 'Cinzel Decorative', serif;
-  font-size: 1rem;
+  font-size: 1.85rem;
   color: #C5A059;
   display: block;
   line-height: 1;
-  text-shadow: 0 0 12px rgba(197,160,89,0.3);
+  text-shadow: 0 0 16px rgba(197,160,89,0.35);
 }
 .mobileCountdownLabel {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 0.38rem;
+  font-size: 0.65rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: rgba(197,160,89,0.4);
   display: block;
-  margin-top: 0.1rem;
+  margin-top: 0.15rem;
 }
 
 @media (max-width: 768px) and (orientation: portrait) {
@@ -634,8 +633,8 @@
 }
 
 .mobileSwipeHintWrap {
-  position: absolute; bottom: 24%; left: 0; right: 0;
-  display: flex; justify-content: center;
+  position: absolute; bottom: 10%; right: 5%;
+  display: flex;
 }
 
 .mobileSwipeHint {

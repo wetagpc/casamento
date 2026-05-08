@@ -127,22 +127,28 @@ export default function Fabula() {
     return () => { document.body.style.overflow = ''; };
   }, [isMobilePortrait]);
 
-  /* Audio autoplay */
+  /* Audio autoplay — muted start bypasses browser block; unmutes on first gesture */
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
     audio.volume = 0.45;
-    audio.play().then(() => setPlaying(true)).catch(() => {});
-    const onGesture = () => {
-      if (!audioRef.current || !audioRef.current.paused) return;
-      audioRef.current.play().then(() => setPlaying(true)).catch(() => {});
-    };
-    window.addEventListener('pointerdown', onGesture, { once: true });
-    window.addEventListener('keydown',     onGesture, { once: true });
-    return () => {
-      window.removeEventListener('pointerdown', onGesture);
-      window.removeEventListener('keydown',     onGesture);
-    };
+    audio.muted = true;
+    audio.play()
+      .then(() => {
+        const unmute = () => { audio.muted = false; setPlaying(true); };
+        window.addEventListener('pointerdown', unmute, { once: true });
+        window.addEventListener('touchstart',  unmute, { once: true });
+        window.addEventListener('keydown',     unmute, { once: true });
+      })
+      .catch(() => {
+        audio.muted = false;
+        const onGesture = () => {
+          audio.play().then(() => setPlaying(true)).catch(() => {});
+        };
+        window.addEventListener('pointerdown', onGesture, { once: true });
+        window.addEventListener('touchstart',  onGesture, { once: true });
+        window.addEventListener('keydown',     onGesture, { once: true });
+      });
   }, []);
 
   /* Countdown */
