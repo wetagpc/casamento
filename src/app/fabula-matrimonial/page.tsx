@@ -76,9 +76,11 @@ export default function Fabula() {
   const [sparkles, setSparkles]         = useState<Sparkle[]>([]);
   const [isMobilePortrait, setIsMobilePortrait] = useState(false);
   const [mobilePage, setMobilePage]     = useState(0);
-  const audioRef  = useRef<HTMLAudioElement>(null);
-  const touchX    = useRef(0);
-  const touchY    = useRef(0);
+  const [flippingTo, setFlippingTo]     = useState<number | null>(null);
+  const audioRef   = useRef<HTMLAudioElement>(null);
+  const touchX     = useRef(0);
+  const touchY     = useRef(0);
+  const flipTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [countdown, setCountdown] = useState({ days: '—', hours: '—', minutes: '—', seconds: '—' });
 
   useEffect(() => {
@@ -183,6 +185,45 @@ export default function Fabula() {
 
   const jumpTo = (i: number) => window.scrollTo({ top: i * window.innerHeight, behavior: 'smooth' });
 
+  /* ── Flip navigation ── */
+  function navigateTo(target: number) {
+    if (target < 0 || target >= NUM_MOBILE_PAGES || target === mobilePage) return;
+    if (flippingTo !== null) return; // already mid-flip
+    setFlippingTo(target);
+    flipTimer.current = setTimeout(() => {
+      setMobilePage(target);
+      setFlippingTo(null);
+    }, 620);
+  }
+
+  /* ── 3-D page state helpers ── */
+  function mobileTransform(index: number): string {
+    if (flippingTo !== null) {
+      const fwd = flippingTo > mobilePage;
+      if (fwd  && index === mobilePage) return 'rotateY(-180deg)'; // current flips away
+      if (!fwd && index === flippingTo) return 'rotateY(0deg)';    // prev unfolds back
+    }
+    return index < mobilePage ? 'rotateY(-180deg)' : 'rotateY(0deg)';
+  }
+
+  function mobileZ(index: number): number {
+    if (flippingTo !== null) {
+      const fwd = flippingTo > mobilePage;
+      if (fwd)  return index === mobilePage ? 100 : index === flippingTo ? 99 : index < mobilePage ? index + 1 : 50 - index;
+      else      return index === flippingTo ? 100 : index === mobilePage  ? 99 : index < mobilePage ? index + 1 : 50 - index;
+    }
+    if (index === mobilePage) return 100;
+    if (index < mobilePage)   return index + 1;
+    return 50 - index;
+  }
+
+  function mobileTransition(index: number): string {
+    if (flippingTo === null) return 'none';
+    const fwd = flippingTo > mobilePage;
+    const active = fwd ? index === mobilePage : index === flippingTo;
+    return active ? 'transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1)' : 'none';
+  }
+
   /* ── Swipe handlers ── */
   function onTouchStart(e: React.TouchEvent) {
     touchX.current = e.touches[0].clientX;
@@ -192,7 +233,7 @@ export default function Fabula() {
     const dx = e.changedTouches[0].clientX - touchX.current;
     const dy = e.changedTouches[0].clientY - touchY.current;
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-      setMobilePage(p => dx < 0 ? Math.min(NUM_MOBILE_PAGES - 1, p + 1) : Math.max(0, p - 1));
+      navigateTo(dx < 0 ? mobilePage + 1 : mobilePage - 1);
     }
   }
 
@@ -203,13 +244,15 @@ export default function Fabula() {
     opts: { dark?: boolean; scrollable?: boolean } = {},
   ) {
     const { dark = false, scrollable = false } = opts;
-    const offset = (index - mobilePage) * 100;
-    const visible = Math.abs(index - mobilePage) <= 1;
     return (
       <div
         key={index}
         className={[styles.mobilePage, dark ? styles.mobilePageCover : ''].filter(Boolean).join(' ')}
-        style={{ transform: `translateX(${offset}%)`, visibility: visible ? 'visible' : 'hidden' }}
+        style={{
+          transform:  mobileTransform(index),
+          zIndex:     mobileZ(index),
+          transition: mobileTransition(index),
+        }}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
@@ -621,23 +664,23 @@ export default function Fabula() {
           <span className={styles.mobileTopTitle}>Caio &amp; Sophia · 26.09.2026</span>
         </div>
 
-        {/* Pages */}
-        <div style={{ position: 'relative', flex: 1, overflow: 'hidden' }}>
+        {/* Pages — 3-D flip container */}
+        <div className={styles.mobilePagesContainer}>
           {mobilePages}
         </div>
 
         {/* Bottom nav */}
         <div className={styles.mobileNavBar}>
-          <button className={styles.mobilePrev} onClick={() => setMobilePage(p => Math.max(0, p - 1))} aria-label="Anterior">‹</button>
+          <button className={styles.mobilePrev} onClick={() => navigateTo(mobilePage - 1)} aria-label="Anterior">‹</button>
           {Array.from({ length: NUM_MOBILE_PAGES }, (_, i) => (
             <div
               key={i}
               className={[styles.mobileDot, i === mobilePage ? styles.mobileDotActive : ''].join(' ')}
-              onClick={() => setMobilePage(i)}
+              onClick={() => navigateTo(i)}
               title={mobileNavLabels[i]}
             />
           ))}
-          <button className={styles.mobileNext} onClick={() => setMobilePage(p => Math.min(NUM_MOBILE_PAGES - 1, p + 1))} aria-label="Próximo">›</button>
+          <button className={styles.mobileNext} onClick={() => navigateTo(mobilePage + 1)} aria-label="Próximo">›</button>
         </div>
       </div>
 

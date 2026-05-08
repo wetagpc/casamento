@@ -427,19 +427,24 @@
   overflow: hidden;
 }
 
+.mobilePagesContainer {
+  position: relative; flex: 1; overflow: hidden;
+  perspective: 1400px;
+  perspective-origin: 50% 50%;
+}
+
 .mobilePage {
   position: absolute; inset: 0;
   display: flex; flex-direction: column;
   background: #FCFAF6;
-  transition: transform 0.38s cubic-bezier(0.2, 0.8, 0.2, 1),
-              opacity   0.28s ease;
+  transform-origin: left center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
+  /* transition is applied via inline style, only on the active page */
 }
 
 .mobilePageCover {
-  background: linear-gradient(160deg, #19241C 0%, #2c3e2f 45%, #111A13 100%);
-}
-
-.mobilePageBack {
   background: linear-gradient(160deg, #19241C 0%, #2c3e2f 45%, #111A13 100%);
 }
 
