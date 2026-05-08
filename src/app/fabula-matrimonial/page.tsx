@@ -764,7 +764,11 @@ export default function Fabula() {
             ].map(s => (
               <button
                 key={s.label}
-                className={[styles.mobileTopNavBtn, mobilePage >= s.target && mobilePage <= s.end ? styles.mobileTopNavBtnActive : ''].join(' ')}
+                className={[
+                  styles.mobileTopNavBtn,
+                  mobilePage >= s.target && mobilePage <= s.end ? styles.mobileTopNavBtnActive : '',
+                  s.label === 'Confirmar' ? styles.mobileTopNavBtnCta : '',
+                ].filter(Boolean).join(' ')}
                 onClick={() => navigateTo(s.target)}
               >
                 {s.label}
