@@ -521,7 +521,7 @@ export default function Fabula() {
         target="_blank" rel="noreferrer" className={styles.mapLink}>
         Ver Rota no Google Maps
       </a>
-    </>
+    </div>
   );
 
   const trajeContent = (
