@@ -447,6 +447,7 @@
   border-radius: inherit;
   perspective: 900px;
   perspective-origin: 30% 50%;
+  touch-action: pan-y;
 }
 
 .mobilePage {

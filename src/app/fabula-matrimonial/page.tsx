@@ -76,11 +76,12 @@ export default function Fabula() {
   const [sparkles, setSparkles]         = useState<Sparkle[]>([]);
   const [isMobilePortrait, setIsMobilePortrait] = useState(false);
   const [mobilePage, setMobilePage]     = useState(0);
-  const [flippingTo, setFlippingTo]     = useState<number | null>(null);
-  const audioRef   = useRef<HTMLAudioElement>(null);
-  const touchX     = useRef(0);
-  const touchY     = useRef(0);
-  const flipTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [activeAngle, setActiveAngle]   = useState<number | null>(null);
+  const [activeDir, setActiveDir]       = useState<'fwd' | 'bwd' | null>(null);
+  const [snapping, setSnapping]         = useState(false);
+  const audioRef    = useRef<HTMLAudioElement>(null);
+  const touchStart  = useRef<{ x: number; y: number; w: number } | null>(null);
+  const snapTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [countdown, setCountdown] = useState({ days: '—', hours: '—', minutes: '—', seconds: '—' });
 
   useEffect(() => {
@@ -185,32 +186,24 @@ export default function Fabula() {
 
   const jumpTo = (i: number) => window.scrollTo({ top: i * window.innerHeight, behavior: 'smooth' });
 
-  /* ── Flip navigation ── */
-  function navigateTo(target: number) {
-    if (target < 0 || target >= NUM_MOBILE_PAGES || target === mobilePage) return;
-    if (flippingTo !== null) return; // already mid-flip
-    setFlippingTo(target);
-    flipTimer.current = setTimeout(() => {
-      setMobilePage(target);
-      setFlippingTo(null);
-    }, 620);
-  }
-
-  /* ── 3-D page state helpers ── */
+  /* ── 3-D page helpers ── */
   function mobileTransform(index: number): string {
-    if (flippingTo !== null) {
-      const fwd = flippingTo > mobilePage;
-      if (fwd  && index === mobilePage) return 'rotateY(-180deg)'; // current flips away
-      if (!fwd && index === flippingTo) return 'rotateY(0deg)';    // prev unfolds back
+    if (activeDir !== null && activeAngle !== null) {
+      if (activeDir === 'fwd' && index === mobilePage)     return `rotateY(${activeAngle}deg)`;
+      if (activeDir === 'bwd' && index === mobilePage - 1) return `rotateY(${activeAngle}deg)`;
     }
     return index < mobilePage ? 'rotateY(-180deg)' : 'rotateY(0deg)';
   }
 
   function mobileZ(index: number): number {
-    if (flippingTo !== null) {
-      const fwd = flippingTo > mobilePage;
-      if (fwd)  return index === mobilePage ? 100 : index === flippingTo ? 99 : index < mobilePage ? index + 1 : 50 - index;
-      else      return index === flippingTo ? 100 : index === mobilePage  ? 99 : index < mobilePage ? index + 1 : 50 - index;
+    if (activeDir !== null) {
+      if (activeDir === 'fwd') {
+        if (index === mobilePage)     return 100;
+        if (index === mobilePage + 1) return 99;
+      } else {
+        if (index === mobilePage - 1) return 100;
+        if (index === mobilePage)     return 99;
+      }
     }
     if (index === mobilePage) return 100;
     if (index < mobilePage)   return index + 1;
@@ -218,22 +211,90 @@ export default function Fabula() {
   }
 
   function mobileTransition(index: number): string {
-    if (flippingTo === null) return 'none';
-    const fwd = flippingTo > mobilePage;
-    const active = fwd ? index === mobilePage : index === flippingTo;
-    return active ? 'transform 0.55s cubic-bezier(0.35, 0.0, 0.25, 1.0)' : 'none';
+    if (!snapping) return 'none';
+    const snap = '0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    if (activeDir === 'fwd' && index === mobilePage)     return `transform ${snap}`;
+    if (activeDir === 'bwd' && index === mobilePage - 1) return `transform ${snap}`;
+    return 'none';
   }
 
-  /* ── Swipe handlers ── */
-  function onTouchStart(e: React.TouchEvent) {
-    touchX.current = e.touches[0].clientX;
-    touchY.current = e.touches[0].clientY;
+  /* ── Dot / button navigation (no drag) ── */
+  function navigateTo(target: number) {
+    if (target < 0 || target >= NUM_MOBILE_PAGES || target === mobilePage) return;
+    if (activeAngle !== null || snapping) return;
+    const dir: 'fwd' | 'bwd' = target > mobilePage ? 'fwd' : 'bwd';
+    setActiveDir(dir);
+    setSnapping(true);
+    setActiveAngle(dir === 'fwd' ? -180 : 0);
+    snapTimer.current = setTimeout(() => {
+      setMobilePage(target);
+      setActiveAngle(null);
+      setActiveDir(null);
+      setSnapping(false);
+    }, 580);
   }
-  function onTouchEnd(e: React.TouchEvent) {
-    const dx = e.changedTouches[0].clientX - touchX.current;
-    const dy = e.changedTouches[0].clientY - touchY.current;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-      navigateTo(dx < 0 ? mobilePage + 1 : mobilePage - 1);
+
+  /* ── Touch drag — page follows finger ── */
+  function onTouchStart(e: React.TouchEvent) {
+    if (snapping) return;
+    if (snapTimer.current) clearTimeout(snapTimer.current);
+    const t = e.touches[0];
+    touchStart.current = { x: t.clientX, y: t.clientY, w: (e.currentTarget as HTMLElement).offsetWidth };
+  }
+
+  function onTouchMove(e: React.TouchEvent) {
+    if (!touchStart.current || snapping) return;
+    const dx = e.touches[0].clientX - touchStart.current.x;
+    const dy = e.touches[0].clientY - touchStart.current.y;
+    if (activeDir === null && Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 6) {
+      touchStart.current = null; return;
+    }
+    if (Math.abs(dx) < 4) return;
+    const w = touchStart.current.w;
+    if (dx < 0 && mobilePage < NUM_MOBILE_PAGES - 1) {
+      if (activeDir === null) setActiveDir('fwd');
+      setActiveAngle(Math.max(-180, Math.min(0, (dx / w) * 180)));
+    } else if (dx > 0 && mobilePage > 0) {
+      if (activeDir === null) setActiveDir('bwd');
+      setActiveAngle(Math.min(0, Math.max(-180, -180 + (dx / w) * 180)));
+    }
+  }
+
+  function onTouchEnd() {
+    if (!touchStart.current || activeDir === null || activeAngle === null) {
+      touchStart.current = null; setActiveAngle(null); setActiveDir(null); return;
+    }
+    touchStart.current = null;
+    const dir = activeDir;
+    const angle = activeAngle;
+    const SNAP = 310;
+    setSnapping(true);
+    if (dir === 'fwd') {
+      if (angle < -90) {
+        setActiveAngle(-180);
+        snapTimer.current = setTimeout(() => {
+          setMobilePage(p => Math.min(NUM_MOBILE_PAGES - 1, p + 1));
+          setActiveAngle(null); setActiveDir(null); setSnapping(false);
+        }, SNAP);
+      } else {
+        setActiveAngle(0);
+        snapTimer.current = setTimeout(() => {
+          setActiveAngle(null); setActiveDir(null); setSnapping(false);
+        }, SNAP);
+      }
+    } else {
+      if (angle > -90) {
+        setActiveAngle(0);
+        snapTimer.current = setTimeout(() => {
+          setMobilePage(p => Math.max(0, p - 1));
+          setActiveAngle(null); setActiveDir(null); setSnapping(false);
+        }, SNAP);
+      } else {
+        setActiveAngle(-180);
+        snapTimer.current = setTimeout(() => {
+          setActiveAngle(null); setActiveDir(null); setSnapping(false);
+        }, SNAP);
+      }
     }
   }
 
@@ -248,18 +309,9 @@ export default function Fabula() {
       <div
         key={index}
         className={[styles.mobilePage, dark ? styles.mobilePageCover : ''].filter(Boolean).join(' ')}
-        style={{
-          transform:  mobileTransform(index),
-          zIndex:     mobileZ(index),
-          transition: mobileTransition(index),
-        }}
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
+        style={{ transform: mobileTransform(index), zIndex: mobileZ(index), transition: mobileTransition(index) }}
       >
-        <div
-          className={[styles.mobilePageContent, scrollable ? styles.mobileScrollable : ''].filter(Boolean).join(' ')}
-          style={{}}
-        >
+        <div className={[styles.mobilePageContent, scrollable ? styles.mobileScrollable : ''].filter(Boolean).join(' ')}>
           {!dark && corners}
           {content}
         </div>
@@ -661,7 +713,13 @@ export default function Fabula() {
       <div className={styles.mobileContainer}>
 
         <div className={styles.mobileBook}>
-          <div className={styles.mobilePagesContainer}>
+          <div
+            className={styles.mobilePagesContainer}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            onTouchCancel={onTouchEnd}
+          >
             {mobilePages}
           </div>
         </div>
