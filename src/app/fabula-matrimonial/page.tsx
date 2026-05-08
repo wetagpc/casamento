@@ -399,7 +399,7 @@ export default function Fabula() {
       <p style={{ fontFamily: '"Cinzel Decorative",serif', fontSize: 'clamp(0.48rem,3.2vw,0.62rem)', color: gold, letterSpacing: '0.22em', margin: 0 }}>
         26 · 09 · 2026
       </p>
-      <p style={{ fontFamily: '"Cormorant Garamond",serif', fontStyle: 'italic', fontSize: 'clamp(0.7rem,4vw,0.85rem)', color: 'rgba(197,160,89,0.7)', letterSpacing: '0.1em', margin: '0.6rem 0 0' }}>
+      <p style={{ fontFamily: '"Cormorant Garamond",serif', fontStyle: 'italic', fontSize: 'clamp(0.7rem,4vw,0.85rem)', color: 'rgba(197,160,89,0.7)', letterSpacing: '0.1em', margin: '3rem 0 0' }}>
         Poços de Caldas — Minas Gerais
       </p>
     </div>
@@ -418,7 +418,7 @@ export default function Fabula() {
   );
 
   const historiaP1Content = (
-    <>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
       <p className={styles.chapter}>Nossa História</p>
       <h2 className={styles.chapterTitle}>Uma Tarde em 2014</h2>
       <p className={styles.text}>
@@ -427,24 +427,28 @@ export default function Fabula() {
       <p className={styles.text}>
         Nada havia sido perdido. O tempo apenas aguardava o momento certo.
       </p>
+      <div style={{ flex: 1 }}/>
       <div className={styles.quote}>
         "Até que, numa tarde na Rua John Pinheiro, uma voz familiar atravessou o ar — <em>Pescoço!</em>"
       </div>
-    </>
+    </div>
   );
 
   const historiaP2Content = (
-    <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'row', margin: '-1rem -0.9rem', overflow: 'hidden' }}>
-      <div style={{ flex: '0 0 58%', overflow: 'hidden' }}>
+    <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'row', gap: '0.7rem', overflow: 'hidden' }}>
+      <div style={{ flex: '0 0 52%', overflow: 'hidden', borderRadius: 3 }}>
         <img src="/images/image_1.png" alt="Caio e Sophia"
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%', display: 'block' }}/>
       </div>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '1.2rem 0.9rem', gap: '0.8rem' }}>
-        <p className={styles.text} style={{ margin: 0 }}>
-          Era a Sophia. Sem pretensão, sem ensaio — apenas a pergunta certa, na hora certa: <em>"O que tem de bom pra fazer hoje?"</em>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.9rem' }}>
+        <p className={styles.text} style={{ margin: 0, lineHeight: 1.6 }}>
+          Era a Sophia.<br/>
+          Sem pretensão, sem ensaio — apenas a pergunta certa, na hora certa:<br/>
+          <em>"O que tem de bom pra fazer hoje?"</em>
         </p>
-        <p className={styles.text} style={{ margin: 0 }}>
-          Ficaram. E desde aquela tarde, nunca mais precisaram se separar.
+        <p className={styles.text} style={{ margin: 0, lineHeight: 1.6 }}>
+          Ficaram.<br/>
+          E desde aquela tarde, nunca mais precisaram se separar.
         </p>
       </div>
     </div>
@@ -482,7 +486,7 @@ export default function Fabula() {
         </div>
       </div>
       <img src="/images/image_13.png" alt="Local" className={styles.imgCenter}
-        style={{ maxHeight: 130, objectFit: 'cover', objectPosition: 'center 40%', marginTop: 'auto', borderRadius: 3 }}/>
+        style={{ maxHeight: 160, objectFit: 'contain', marginTop: 'auto', borderRadius: 3 }}/>
     </>
   );
 
@@ -515,12 +519,13 @@ export default function Fabula() {
   );
 
   const trajeContent = (
-    <>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
       <p className={styles.chapter}>Traje</p>
       <h2 className={styles.chapterTitle}>Esporte Fino</h2>
-      <p className={styles.text} style={{ fontSize: '0.87rem', marginBottom: '0.6rem' }}>
+      <p className={styles.text} style={{ fontSize: '0.87rem', marginBottom: 0 }}>
         O casamento será ao ar livre. Sugerimos tons que harmonizam com o cenário:
       </p>
+      <div style={{ flex: 1 }}/>
       <div className={styles.swatchGrid}>
         {[
           { bg: '#D2C4A8', name: 'Areia'   },
@@ -534,13 +539,13 @@ export default function Fabula() {
         ))}
       </div>
       <div style={{ flex: 1 }}/>
-      <p className={styles.text} style={{ fontSize: '0.82rem', fontStyle: 'italic', textAlign: 'center', marginTop: '0.3rem', marginBottom: 0 }}>
+      <p className={styles.text} style={{ fontSize: '0.82rem', fontStyle: 'italic', textAlign: 'center', margin: 0 }}>
         Para as damas, evitem salto agulha no gramado.
       </p>
       <div className={styles.dressCodeAlert}>
         Estas cores são apenas sugestão. <strong>Venha como você é.</strong><br/>O que importa é a sua presença.
       </div>
-    </>
+    </div>
   );
 
   const presentesP1Content = (
