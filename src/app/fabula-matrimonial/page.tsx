@@ -397,9 +397,9 @@ export default function Fabula() {
       <h1 className={styles.title}>Caio &amp; Sophia</h1>
       <Divider/>
       <p style={{ fontFamily: '"Cinzel Decorative",serif', fontSize: 'clamp(0.48rem,3.2vw,0.62rem)', color: gold, letterSpacing: '0.22em', margin: 0 }}>
-        26 · IX · 2026
+        26 · 09 · 2026
       </p>
-      <p style={{ fontFamily: '"Cormorant Garamond",serif', fontStyle: 'italic', fontSize: 'clamp(0.7rem,4vw,0.85rem)', color: 'rgba(197,160,89,0.7)', letterSpacing: '0.1em', margin: 0 }}>
+      <p style={{ fontFamily: '"Cormorant Garamond",serif', fontStyle: 'italic', fontSize: 'clamp(0.7rem,4vw,0.85rem)', color: 'rgba(197,160,89,0.7)', letterSpacing: '0.1em', margin: '0.6rem 0 0' }}>
         Poços de Caldas — Minas Gerais
       </p>
     </div>
@@ -434,18 +434,20 @@ export default function Fabula() {
   );
 
   const historiaP2Content = (
-    <>
-      <div style={{ flex: '0 0 auto', margin: '-1rem -0.9rem 0', overflow: 'hidden', maxHeight: '42%' }}>
+    <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'row', margin: '-1rem -0.9rem', overflow: 'hidden' }}>
+      <div style={{ flex: '0 0 58%', overflow: 'hidden' }}>
         <img src="/images/image_1.png" alt="Caio e Sophia"
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%', display: 'block' }}/>
       </div>
-      <p className={styles.text} style={{ marginTop: '1rem' }}>
-        Era a Sophia. Sem pretensão, sem ensaio — apenas a pergunta certa, na hora certa: <em>"O que tem de bom pra fazer hoje?"</em>
-      </p>
-      <p className={styles.text}>
-        Ficaram. E desde aquela tarde, nunca mais precisaram se separar.
-      </p>
-    </>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '1.2rem 0.9rem', gap: '0.8rem' }}>
+        <p className={styles.text} style={{ margin: 0 }}>
+          Era a Sophia. Sem pretensão, sem ensaio — apenas a pergunta certa, na hora certa: <em>"O que tem de bom pra fazer hoje?"</em>
+        </p>
+        <p className={styles.text} style={{ margin: 0 }}>
+          Ficaram. E desde aquela tarde, nunca mais precisaram se separar.
+        </p>
+      </div>
+    </div>
   );
 
   const celebracaoContent = (
