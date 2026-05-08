@@ -427,9 +427,13 @@ export default function Fabula() {
       <p className={styles.text}>
         Nada havia sido perdido. O tempo apenas aguardava o momento certo.
       </p>
-      <div style={{ flex: 1 }}/>
       <div className={styles.quote}>
         "Até que, numa tarde na Rua John Pinheiro, uma voz familiar atravessou o ar — <em>Pescoço!</em>"
+      </div>
+      <div style={{ flex: 1 }}/>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.25rem', height: '32%', flexShrink: 0 }}>
+        <img src="/images/image_21.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', borderRadius: 2, display: 'block' }}/>
+        <img src="/images/image_22.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', borderRadius: 2, display: 'block' }}/>
       </div>
     </div>
   );
@@ -455,7 +459,7 @@ export default function Fabula() {
   );
 
   const celebracaoContent = (
-    <>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
       <p className={styles.chapter}>A Celebração</p>
       <h2 className={styles.chapterTitle}>26 de Setembro de 2026</h2>
       <p className={styles.text} style={{ textAlign: 'center', fontStyle: 'italic', color: '#6B5F50', marginBottom: '0.8rem' }}>
@@ -485,13 +489,15 @@ export default function Fabula() {
           </div>
         </div>
       </div>
-      <img src="/images/image_13.png" alt="Local" className={styles.imgCenter}
-        style={{ maxHeight: 160, objectFit: 'contain', marginTop: 'auto', borderRadius: 3 }}/>
-    </>
+      <div style={{ flex: 1, minHeight: 0, marginTop: '0.8rem', overflow: 'hidden', borderRadius: 3 }}>
+        <img src="/images/image_13.png" alt="Local"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 15%', display: 'block' }}/>
+      </div>
+    </div>
   );
 
   const localContent = (
-    <>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
       <p className={styles.chapter}>O Local</p>
       <h2 className={styles.chapterTitle}>Caldas — Minas Gerais</h2>
       <p className={styles.text} style={{ fontSize: '0.87rem', textAlign: 'center', marginBottom: '0.7rem' }}>
@@ -618,14 +624,11 @@ export default function Fabula() {
   const galeriaP2Content = (
     <>
       <h2 className={styles.chapterTitle} style={{ marginBottom: '0.4rem' }}>Nosso Álbum</h2>
-      {/* 6-photo organic grid — three rows with staggered proportions */}
-      <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: '54% 46%', gridTemplateRows: '38% 33% 29%', gap: '0.25rem' }}>
+      <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: '54% 46%', gridTemplateRows: '52% 48%', gap: '0.25rem' }}>
         <img src="/images/image_17.png" style={gi} alt=""/>
         <img src="/images/image_18.jpg" style={gi} alt=""/>
         <img src="/images/image_19.jpg" style={gi} alt=""/>
         <img src="/images/image_20.jpg" style={gi} alt=""/>
-        <img src="/images/image_21.jpg" style={gi} alt=""/>
-        <img src="/images/image_22.jpg" style={gi} alt=""/>
       </div>
     </>
   );
