@@ -418,7 +418,7 @@ export default function Fabula() {
   );
 
   const historiaP1Content = (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingBottom: '2.2rem' }}>
       <p className={styles.chapter}>Nossa História</p>
       <h2 className={styles.chapterTitle}>Uma Tarde em 2014</h2>
       <p className={styles.text}>
@@ -431,7 +431,7 @@ export default function Fabula() {
         "Até que, numa tarde na Rua John Pinheiro, uma voz familiar atravessou o ar — <em>Pescoço!</em>"
       </div>
       <div style={{ flex: 1, minHeight: 0 }}/>
-      <div style={{ flex: '0 0 30%', minHeight: 0, overflow: 'hidden', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.25rem', marginBottom: '1.8rem' }}>
+      <div style={{ height: '7rem', overflow: 'hidden', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.25rem' }}>
         <img src="/images/image_21.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', borderRadius: 2, display: 'block' }}/>
         <img src="/images/image_22.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', borderRadius: 2, display: 'block' }}/>
       </div>
