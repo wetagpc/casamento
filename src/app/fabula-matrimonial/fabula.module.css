@@ -418,7 +418,7 @@
   .persistentCountdown .countdownLabel { font-size: 0.42rem; }
 }
 
-/* ─── Portrait mobile — swipe pages ─── */
+/* ─── Portrait mobile — book with spine ─── */
 .mobileContainer {
   position: fixed; inset: 0; z-index: 10;
   display: none;
@@ -427,47 +427,10 @@
   overflow: hidden;
 }
 
-.mobilePagesContainer {
-  position: relative; flex: 1; overflow: hidden;
-  perspective: 1400px;
-  perspective-origin: 50% 50%;
-}
-
-.mobilePage {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column;
-  background: #FCFAF6;
-  transform-origin: left center;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  will-change: transform;
-  /* transition is applied via inline style, only on the active page */
-}
-
-.mobilePageCover {
-  background: linear-gradient(160deg, #19241C 0%, #2c3e2f 45%, #111A13 100%);
-}
-
-.mobilePageContent {
-  flex: 1;
-  overflow: hidden;
-  padding: 2rem 1.4rem 1.2rem;
-  display: flex; flex-direction: column;
-}
-
-.mobileScrollable {
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-}
-
 .mobileTopBar {
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 44px;
+  flex: 0 0 44px;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(17,20,18,0.88);
-  backdrop-filter: blur(6px);
-  z-index: 5;
+  background: rgba(17,20,18,0.97);
   border-bottom: 1px solid rgba(197,160,89,0.15);
 }
 
@@ -478,15 +441,79 @@
   color: rgba(197,160,89,0.75);
 }
 
+/* Book row: spine on left, pages on right */
+.mobileBookArea {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+/* The visible "lombada" — stack of already-read pages */
+.mobileSpine {
+  flex: 0 0 30px;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(252,250,246,0.07) 0px, rgba(252,250,246,0.07) 1px,
+      transparent 1px, transparent 5px
+    ),
+    linear-gradient(to right, #060A07, #111A13 60%, #19241C);
+  position: relative;
+  box-shadow: inset -3px 0 6px rgba(0,0,0,0.6);
+}
+.mobileSpine::after {
+  content: '';
+  position: absolute; right: 0; top: 0; bottom: 0; width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%, rgba(197,160,89,0.45) 15%,
+    rgba(197,160,89,0.45) 85%, transparent 100%
+  );
+}
+
+.mobilePagesContainer {
+  flex: 1;
+  position: relative; overflow: hidden;
+  perspective: 1400px;
+  perspective-origin: 0% 50%;
+}
+
+.mobilePage {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  background: #FCFAF6;
+  transform-origin: left center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
+}
+
+.mobilePageCover {
+  background: linear-gradient(160deg, #19241C 0%, #2c3e2f 45%, #111A13 100%);
+}
+
+.mobilePageContent {
+  flex: 1;
+  overflow: hidden;
+  padding: 1.5rem 1.2rem 1rem;
+  display: flex; flex-direction: column;
+  position: relative;
+}
+
+.mobileScrollable {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
 .mobileNavBar {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  height: 52px;
+  flex: 0 0 52px;
   display: flex; align-items: center; justify-content: center;
   gap: 6px;
-  background: rgba(17,20,18,0.88);
-  backdrop-filter: blur(6px);
+  background: rgba(17,20,18,0.97);
   border-top: 1px solid rgba(197,160,89,0.15);
-  z-index: 5;
+  position: relative;
 }
 
 .mobileDot {

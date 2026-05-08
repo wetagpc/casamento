@@ -258,7 +258,7 @@ export default function Fabula() {
       >
         <div
           className={[styles.mobilePageContent, scrollable ? styles.mobileScrollable : ''].filter(Boolean).join(' ')}
-          style={{ paddingTop: '54px', paddingBottom: '60px' }}
+          style={{}}
         >
           {!dark && corners}
           {content}
@@ -664,9 +664,12 @@ export default function Fabula() {
           <span className={styles.mobileTopTitle}>Caio &amp; Sophia · 26.09.2026</span>
         </div>
 
-        {/* Pages — 3-D flip container */}
-        <div className={styles.mobilePagesContainer}>
-          {mobilePages}
+        {/* Book area: spine + pages */}
+        <div className={styles.mobileBookArea}>
+          <div className={styles.mobileSpine}/>
+          <div className={styles.mobilePagesContainer}>
+            {mobilePages}
+          </div>
         </div>
 
         {/* Bottom nav */}
