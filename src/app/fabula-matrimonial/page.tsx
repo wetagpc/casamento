@@ -465,7 +465,7 @@ export default function Fabula() {
         </div>
       </div>
       <img src="/images/image_13.png" alt="Local" className={styles.imgCenter}
-        style={{ maxHeight: 80, objectFit: 'cover', objectPosition: 'center top', marginTop: 'auto' }}/>
+        style={{ maxHeight: 130, objectFit: 'cover', objectPosition: 'center 40%', marginTop: 'auto', borderRadius: 3 }}/>
     </>
   );
 
@@ -516,6 +516,7 @@ export default function Fabula() {
           </div>
         ))}
       </div>
+      <div style={{ flex: 1 }}/>
       <p className={styles.text} style={{ fontSize: '0.82rem', fontStyle: 'italic', textAlign: 'center', marginTop: '0.3rem', marginBottom: 0 }}>
         Para as damas, evitem salto agulha no gramado.
       </p>
@@ -576,32 +577,33 @@ export default function Fabula() {
     </>
   );
 
+  const gi: React.CSSProperties = { width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', borderRadius: 2, display: 'block' };
+
   const galeriaP1Content = (
     <>
       <p className={styles.chapter}>Galeria</p>
-      <h2 className={styles.chapterTitle}>Momentos</h2>
-      <div className={styles.galleryGrid}>
-        <img src="/images/image_13.png" className={styles.galleryImg} alt="Galeria"/>
-        <img src="/images/image_14.png" className={styles.galleryImg} alt="Galeria"/>
-        <img src="/images/image_15.png" className={styles.galleryImg} alt="Galeria"/>
-        <img src="/images/image_16.png" className={styles.galleryImg} alt="Galeria"/>
+      <h2 className={styles.chapterTitle} style={{ marginBottom: '0.5rem' }}>Momentos</h2>
+      {/* organic asymmetric collage — larger top-left, shifts right on row 2 */}
+      <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: '58% 42%', gridTemplateRows: '56% 44%', gap: '0.25rem' }}>
+        <img src="/images/image_13.png" style={gi} alt=""/>
+        <img src="/images/image_14.png" style={gi} alt=""/>
+        <img src="/images/image_15.png" style={gi} alt=""/>
+        <img src="/images/image_16.png" style={gi} alt=""/>
       </div>
     </>
   );
 
   const galeriaP2Content = (
     <>
-      <p className={styles.chapter} style={{ opacity: 0 }}>·</p>
-      <h2 className={styles.chapterTitle} style={{ marginBottom: '0.6rem' }}>Nosso Álbum</h2>
-      <div className={styles.galleryGrid}>
-        <img src="/images/image_17.png" className={styles.galleryImg} alt="Galeria"/>
-        <img src="/images/image_18.jpg" className={styles.galleryImg} alt="Galeria"/>
-        <img src="/images/image_19.jpg" className={styles.galleryImg} alt="Galeria"/>
-        <img src="/images/image_20.jpg" className={styles.galleryImg} alt="Galeria"/>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginTop: '0.4rem' }}>
-        <img src="/images/image_21.jpg" style={{ width: '100%', aspectRatio: '3/1', objectFit: 'cover', objectPosition: 'center top', borderRadius: 2 }} alt="Galeria"/>
-        <img src="/images/image_22.jpg" style={{ width: '100%', aspectRatio: '3/1', objectFit: 'cover', objectPosition: 'center top', borderRadius: 2 }} alt="Galeria"/>
+      <h2 className={styles.chapterTitle} style={{ marginBottom: '0.4rem' }}>Nosso Álbum</h2>
+      {/* 6-photo organic grid — three rows with staggered proportions */}
+      <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: '54% 46%', gridTemplateRows: '38% 33% 29%', gap: '0.25rem' }}>
+        <img src="/images/image_17.png" style={gi} alt=""/>
+        <img src="/images/image_18.jpg" style={gi} alt=""/>
+        <img src="/images/image_19.jpg" style={gi} alt=""/>
+        <img src="/images/image_20.jpg" style={gi} alt=""/>
+        <img src="/images/image_21.jpg" style={gi} alt=""/>
+        <img src="/images/image_22.jpg" style={gi} alt=""/>
       </div>
     </>
   );
