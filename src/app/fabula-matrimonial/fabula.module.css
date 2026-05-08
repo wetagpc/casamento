@@ -615,16 +615,17 @@
 
 /* ─── Page-flip hint (cover only) ─── */
 @keyframes cornerLift {
-  0%, 55%, 100% { transform: scale(1); opacity: 0.4; }
-  18%, 38%      { transform: scale(2.8) perspective(70px) rotateX(-4deg) rotateY(-16deg); opacity: 0.95; }
+  0%        { transform: scale(1); opacity: 0.35; }
+  15%, 42%  { transform: scale(2.8) perspective(70px) rotateX(-4deg) rotateY(-16deg); opacity: 0.95; }
+  65%, 100% { transform: scale(1); opacity: 0.35; }
 }
 
 @keyframes swipeHint {
-  0%, 8%  { opacity: 0;    transform: translateX(18px);  }
-  26%     { opacity: 0.85; transform: translateX(0px);   }
-  56%     { opacity: 0.85; transform: translateX(-18px); }
-  72%     { opacity: 0;    transform: translateX(-28px); }
-  100%    { opacity: 0;    transform: translateX(18px);  }
+  0%    { opacity: 0;   transform: translateX(20px);  }
+  15%   { opacity: 0.9; transform: translateX(6px);   }
+  42%   { opacity: 0.9; transform: translateX(-16px); }
+  62%   { opacity: 0;   transform: translateX(-24px); }
+  100%  { opacity: 0;   transform: translateX(20px);  }
 }
 
 .mobileFlipHint {
@@ -643,7 +644,7 @@
 }
 
 .mobileSwipeHintWrap {
-  position: absolute; bottom: 10%; right: 5%;
+  position: absolute; bottom: 3%; right: 5%;
   display: flex;
 }
 
