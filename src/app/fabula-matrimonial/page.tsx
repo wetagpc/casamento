@@ -769,27 +769,28 @@ export default function Fabula() {
           )}
         </div>
 
-        <div className={styles.mobileNavDots}>
-          <button className={styles.mobilePrev} onClick={() => navigateTo(mobilePage - 1)} aria-label="Anterior">‹</button>
-          {Array.from({ length: NUM_MOBILE_PAGES }, (_, i) => (
-            <div
-              key={i}
-              className={[styles.mobileDot, i === mobilePage ? styles.mobileDotActive : ''].join(' ')}
-              onClick={() => navigateTo(i)}
-              title={mobileNavLabels[i]}
-            />
-          ))}
-          <button className={styles.mobileNext} onClick={() => navigateTo(mobilePage + 1)} aria-label="Próximo">›</button>
-        </div>
+        <div className={styles.mobileBottomBar}>
+          <div className={styles.mobileNavDots}>
+            <button className={styles.mobilePrev} onClick={() => navigateTo(mobilePage - 1)} aria-label="Anterior">‹</button>
+            {Array.from({ length: NUM_MOBILE_PAGES }, (_, i) => (
+              <div
+                key={i}
+                className={[styles.mobileDot, i === mobilePage ? styles.mobileDotActive : ''].join(' ')}
+                onClick={() => navigateTo(i)}
+                title={mobileNavLabels[i]}
+              />
+            ))}
+            <button className={styles.mobileNext} onClick={() => navigateTo(mobilePage + 1)} aria-label="Próximo">›</button>
+          </div>
 
-        {/* Compact countdown */}
-        <div className={styles.mobileCountdown}>
-          {(['days','hours','minutes','seconds'] as const).map((k, i) => (
-            <div key={k} className={styles.mobileCountdownItem}>
-              <span className={styles.mobileCountdownNum}>{countdown[k]}</span>
-              <span className={styles.mobileCountdownLabel}>{['dias','horas','min','seg'][i]}</span>
-            </div>
-          ))}
+          <div className={styles.mobileCountdown}>
+            {(['days','hours','minutes','seconds'] as const).map((k, i) => (
+              <div key={k} className={styles.mobileCountdownItem}>
+                <span className={styles.mobileCountdownNum}>{countdown[k]}</span>
+                <span className={styles.mobileCountdownLabel}>{['dias','horas','min','seg'][i]}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
       </div>

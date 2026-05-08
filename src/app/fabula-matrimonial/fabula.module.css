@@ -424,8 +424,8 @@
   display: none;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
+  justify-content: space-between;
+  padding: 0.7rem 0 0.8rem;
 }
 
 /* Page area — the visible "book", floats on the dark bg */
@@ -491,6 +491,15 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Bottom bar — dots + countdown grouped at bottom of screen */
+.mobileBottomBar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 91vw;
 }
 
 /* Nav dots below the book */
