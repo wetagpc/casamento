@@ -488,7 +488,7 @@ export default function Fabula() {
           </div>
         </div>
       </div>
-      <div style={{ flex: 1, minHeight: 0, marginTop: '0.8rem', overflow: 'hidden', borderRadius: 3 }}>
+      <div style={{ flex: 1, minHeight: 0, margin: '0.8rem 0.8rem 1.8rem', overflow: 'hidden', borderRadius: 3 }}>
         <img src="/images/image_13.png" alt="Local"
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 40%', display: 'block' }}/>
       </div>
