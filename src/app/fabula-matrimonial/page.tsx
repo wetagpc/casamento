@@ -430,10 +430,9 @@ export default function Fabula() {
       <div className={styles.quote}>
         "Até que, numa tarde na Rua John Pinheiro, uma voz familiar atravessou o ar — <em>Pescoço!</em>"
       </div>
-      <div style={{ flex: 1, minHeight: 0 }}/>
-      <div style={{ height: '7rem', overflow: 'hidden', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.25rem', alignItems: 'center' }}>
-        <img src="/images/image_21.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}/>
-        <img src="/images/image_22.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}/>
+      <div style={{ flex: 1, minHeight: 0, overflow: 'hidden', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.25rem', marginTop: '0.8rem' }}>
+        <img src="/images/image_21.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 25%', display: 'block' }}/>
+        <img src="/images/image_22.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%', display: 'block' }}/>
       </div>
     </div>
   );
@@ -491,7 +490,7 @@ export default function Fabula() {
       </div>
       <div style={{ flex: 1, minHeight: 0, marginTop: '0.8rem', overflow: 'hidden', borderRadius: 3 }}>
         <img src="/images/image_13.png" alt="Local"
-          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 15%', display: 'block' }}/>
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 40%', display: 'block' }}/>
       </div>
     </div>
   );

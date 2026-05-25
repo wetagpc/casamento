@@ -326,6 +326,7 @@ section {
 
 .local-details {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
   margin-top: 2.5rem;
 }
@@ -386,7 +387,7 @@ section {
 /* GIFTS */
 .gifts-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.25rem;
   margin-top: 2rem;
 }
@@ -515,6 +516,12 @@ section {
   .countdown-num { font-size: 3rem; }
   
   section { padding: 7rem 2rem; }
+  
+  .couple-photo-block {
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
   
   .local-details { grid-template-columns: repeat(3, 1fr); gap: 2rem; }
   
