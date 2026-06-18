@@ -422,7 +422,7 @@ export default function Fabula() {
       <p className={styles.chapter}>Nossa História</p>
       <h2 className={styles.chapterTitle}>Uma Tarde em 2014</h2>
       <p className={styles.text}>
-        <span className={styles.dropCap}>E</span>m 2014, os corredores da universidade os apresentaram brevemente — o suficiente para que duas memórias se formassem sem ainda saber por quê. Os anos passaram, cada um a sua vida, até que o acaso os colocou de volta na mesma calçada.
+        <span className={styles.dropCap}>E</span>m 2014, os corredores da universidade os apresentaram brevemente — o suficiente para que duas memórias se formassem sem ainda saber por quê. Os anos passaram, cada um seguiu sua vida, até que o acaso os colocou de volta na mesma calçada.
       </p>
       <p className={styles.text}>
         Nada havia sido perdido. O tempo apenas aguardava o momento certo.
