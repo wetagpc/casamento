@@ -178,7 +178,7 @@ export default function Fabula() {
   }, []);
 
   function copyPix() {
-    navigator.clipboard.writeText('36ed70af-7aae-4610-b4c8-b026a7ccbc1b');
+    navigator.clipboard.writeText('(35) 99970-3093');
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
@@ -909,7 +909,7 @@ export default function Fabula() {
               Todos os presentes são recebidos via Pix. Copie a chave abaixo:
             </p>
             <div style={{ padding: '0.9rem', border: '1px solid rgba(197,160,89,0.3)', wordBreak: 'break-all', margin: '1rem 0', fontFamily: '"Cormorant Garamond",serif', fontSize: '1rem', color: text, letterSpacing: '0.04em' }}>
-              36ed70af-7aae-4610-b4c8-b026a7ccbc1b
+              (35) 99970-3093
             </div>
             <p style={{ fontSize: '0.75rem', color: '#6B5F50', marginBottom: '1.2rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               Caio Luiz de Paula Vieira · PicPay

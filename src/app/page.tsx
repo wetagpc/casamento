@@ -37,7 +37,7 @@ export default function Home() {
   }, []);
 
   function handleCopyPix() {
-    navigator.clipboard.writeText('36ed70af-7aae-4610-b4c8-b026a7ccbc1b');
+    navigator.clipboard.writeText('(35) 99970-3093');
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
@@ -336,8 +336,8 @@ export default function Home() {
           Qualquer quantia é recebida com muito carinho.</p>
         </div>
         <div className="pix-key-box">
-          <p className="pix-key-label">Chave Pix Aleatória</p>
-          <p className="pix-key" id="pix-key">36ed70af-7aae-4610-b4c8-b026a7ccbc1b</p>
+          <p className="pix-key-label">Chave Pix (Telefone)</p>
+          <p className="pix-key" id="pix-key">(35) 99970-3093</p>
           <p style={{ fontSize: '0.7rem', color: 'rgba(237,227,208,0.5)', marginBottom: '0.8rem' }}>Caio Luiz de Paula Vieira · PicPay</p>
           <button className="pix-copy-btn" onClick={handleCopyPix}>{copied ? "Copiado! ✓" : "Copiar chave"}</button>
         </div>
@@ -434,8 +434,8 @@ export default function Home() {
         <p style={{ fontSize: '0.88rem', fontWeight: '300', color: 'var(--text-light)', lineHeight: '1.7' }}>Todos os presentes são recebidos via Pix, direto na conta dos noivos. Copie a chave abaixo:</p>
         
         <div className="modal-pix-key-box" style={{ background: 'var(--green)', padding: '1.5rem', margin: '1.5rem 0' }}>
-          <p className="modal-pix-label">Chave Pix Aleatória</p>
-          <p className="modal-pix-key" style={{ color: 'var(--parchment)', wordBreak: 'break-all', fontFamily: 'serif' }}>36ed70af-7aae-4610-b4c8-b026a7ccbc1b</p>
+          <p className="modal-pix-label">Chave Pix (Telefone)</p>
+          <p className="modal-pix-key" style={{ color: 'var(--parchment)', wordBreak: 'break-all', fontFamily: 'serif' }}>(35) 99970-3093</p>
           <p className="modal-pix-name" style={{ color: 'rgba(237,227,208,0.5)', fontSize: '0.7rem', marginTop: '0.5rem' }}>Caio Luiz de Paula Vieira · PicPay</p>
         </div>
         <button className="modal-copy-btn" onClick={handleCopyPix} style={{ background: copied ? 'var(--green-light)' : 'var(--terracotta)', color: 'white', width: '100%', border: 'none', padding: '1rem', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
